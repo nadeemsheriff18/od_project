@@ -39,10 +39,10 @@ function Card({ data, onToggleExpand, isExpanded }) {
         </div>
 
         <div className="flex justify-center items-center gap-4 mt-4">
-          <button className="bg-white shadow-md text-purple-700 font-medium py-2 px-4 rounded hover:bg-purple-600">
+          <button className="bg-white shadow-md text-purple-700 font-medium py-2 px-4 rounded hover:bg-purple-200">
             Accept
           </button>
-          <button className="bg-white shadow-md text-purple-700 font-medium py-2 px-4 rounded hover:bg-gray-400">
+          <button className="bg-white shadow-md text-purple-700 font-medium py-2 px-4 rounded hover:bg-purple-200">
             Decline
           </button>
         </div>

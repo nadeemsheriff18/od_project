@@ -54,7 +54,6 @@ function ODController() {
     <div className="p-6 bg-gray-50 min-h-screen flex flex-col items-center overflow-x-hidden">
       <div className="text-center">
         <h2 className="text-2xl font-semibold text-purple-700 mt-2">OD REQUEST</h2>
-        <h3 className="text-xl font-medium text-purple-500 mt-2">LIVE OD / PERMISSION</h3>
       </div>
       
       {/* Tabs Navigation */}
