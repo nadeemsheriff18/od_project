@@ -11,6 +11,7 @@ root.render(
   <React.StrictMode>
     <LOGIN/>
     {/* <Student /> */}
+    <h1>dhwdsdk</h1>
   </React.StrictMode>
 );
 
