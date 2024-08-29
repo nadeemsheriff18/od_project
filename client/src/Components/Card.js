@@ -1,6 +1,11 @@
 import React from 'react';
 
-function Card({ data, onToggleExpand, isExpanded }) {
+function Card({ data, livve, onToggleExpand, isExpanded, onAccept, onDecline }) {
+  // Handler to stop click event from propagating
+  const handleButtonClick = (event) => {
+    event.stopPropagation();
+  };
+
   return (
     <div 
       className="mt-8 shadow-lg bg-violet-100 rounded-lg p-6 max-w-3xl w-full cursor-pointer" 
@@ -38,18 +43,26 @@ function Card({ data, onToggleExpand, isExpanded }) {
           </div>
         </div>
 
-        <div className="flex justify-center items-center gap-4 mt-4">
-          <button className="bg-white shadow-md text-purple-700 font-medium py-2 px-4 rounded hover:bg-purple-200">
-            Accept
-          </button>
-          <button className="bg-white shadow-md text-purple-700 font-medium py-2 px-4 rounded hover:bg-purple-200">
-            Decline
-          </button>
-        </div>
+        {!livve && (
+          <div className="flex justify-center items-center gap-4 mt-4">
+            <button 
+              className="bg-white shadow-md text-purple-700 font-medium py-2 px-4 rounded hover:bg-purple-200"
+              onClick={(e) => { handleButtonClick(e); onAccept(); }}
+            >
+              Accept
+            </button>
+            <button 
+              className="bg-white shadow-md text-purple-700 font-medium py-2 px-4 rounded hover:bg-purple-200"
+              onClick={(e) => { handleButtonClick(e); onDecline(); }}
+            >
+              Decline
+            </button>
+          </div>
+        )}
       </div>
-
+          
       <div 
-        className={` mt-4 shadow-xl rounded-md bg-white pl-4 pr-4 pb-2 pt-2 transition-all duration-200 ease-in-out ${isExpanded ? 'max-h-screen visible' : 'max-h-0 invisible overflow-hidden'}`}
+        className={`mt-3 shadow-xl rounded-md bg-white pl-4 pr-4 pb-2 pt-1 transition-all duration-200 ease-in-out ${isExpanded ? 'max-h-screen visible' : 'max-h-0 invisible overflow-hidden'}`}
         style={{ overflow: 'hidden' }}
       >
         <p><strong>Reason:</strong></p>

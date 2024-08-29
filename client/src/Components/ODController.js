@@ -36,6 +36,9 @@ function ODController() {
     },
   ]);
 
+  // State to manage the accepted OD requests
+  const [acceptedOD, setAcceptedOD] = useState([]);
+
   // State to manage the active tab
   const [activeTab, setActiveTab] = useState('odRequest');
   const [expandedCardId, setExpandedCardId] = useState(null);
@@ -48,6 +51,17 @@ function ODController() {
   // Handler to change the active tab
   const handleTabChange = (tab) => {
     setActiveTab(tab);
+  };
+
+  // Handle Accept and Decline actions
+  const handleAccept = (id) => {
+    const acceptedRequest = requests.find(request => request.id === id);
+    setRequests(requests.filter(request => request.id !== id));
+    setAcceptedOD([...acceptedOD, acceptedRequest]);
+  };
+
+  const handleDecline = (id) => {
+    setRequests(requests.filter(request => request.id !== id));
   };
 
   return (
@@ -73,24 +87,45 @@ function ODController() {
       </div>
 
       {/* Tab Content */}
-      <div className=" mt-4 flex flex-col items-center">
+      <div className="mt-4 flex flex-col items-center">
         {activeTab === 'odRequest' && (
           <div className="w-full max-w-4xl overflow-x-hidden">
             {requests.map(request => (
               <Card
+              live={false}
                 key={request.id}
                 data={request}
                 isExpanded={expandedCardId === request.id}
                 onToggleExpand={() => handleToggleExpand(request.id)}
+                onAccept={() => handleAccept(request.id)}
+                onDecline={() => handleDecline(request.id)}
               />
             ))}
           </div>
         )}
 
         {activeTab === 'liveOd' && (
-          <div className="text-center mt-4 text-gray-600">
-            {/* Placeholder for "LIVE OD / PERMISSION" content */}
-            <p>No live OD requests available at the moment.</p>
+          <div className="flex flex-col items-center mt-4 text-gray-600">
+            {acceptedOD.length === 0 ? (
+              <p>No live OD requests available at the moment.</p>
+            ) : (
+                <>
+                <div className='text-3xl font-medium text-black' >LIVE OD Count : {acceptedOD.length}</div>
+                <div className="w-full max-w-4xl overflow-x-hidden">
+                {acceptedOD.map(request => (
+                  <Card
+                    livve={true}
+                    key={request.id}
+                    data={request}
+                    isExpanded={false} // No need to expand the accepted requests
+                    onToggleExpand={() => {}}
+                    onAccept={() => {}}
+                    onDecline={() => {}}
+                  />
+                ))}
+              </div>
+                </>          
+            )}
           </div>
         )}
       </div>
