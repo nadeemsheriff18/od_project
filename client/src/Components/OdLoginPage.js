@@ -1,5 +1,5 @@
 import React from "react";
-
+import {Link} from 'react-router-dom'
 function OdLoginPage() {
   return (
     <>
@@ -61,12 +61,14 @@ function OdLoginPage() {
             Remember me
           </label>
         </div> */}
-          <button
+        <Link to="/admin">
+        <button
             type="submit"
             className="text-white  z-10 bg-violet-800 hover:bg-violet-900 focus:ring-4 focus:outline-none focus:ring-violet-300 font-medium rounded-lg text-sm w-fit px-5 py-2.5 text-center dark:bg-violet-800 dark:hover:bg-violet-900 dark:focus:ring-violet-800 mx-auto shadow-lg"
           >
-            SignUp
-          </button>
+            LOGIN
+          </button></Link>
+          
         </form>
       </div>
     </>
