@@ -1,17 +1,26 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { BrowserRouter , Route, Routes } from 'react-router-dom';
 import './index.css';
 import App from './App';
-import Student from './Student';
+import History from './Components/History';
+import Student from './Components/Student';
 import LOGIN from './Components/LOGIN';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-    <LOGIN/>
+  <BrowserRouter>
+  <Routes>
+    <Route path="/" element={<LOGIN />} />
+    <Route path="/student" element={<Student />} />
+    <Route path="/history" element={<History />} />
+  </Routes>
+    
     {/* <Student /> */}
-  </React.StrictMode>
+  </BrowserRouter>
+    
+  
 );
 
 

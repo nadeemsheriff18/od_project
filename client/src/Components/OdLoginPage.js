@@ -1,6 +1,9 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 function OdLoginPage() {
+
+  
   return (
     <>
       <div className="min-h-screen bg-violet-100 flex flex-col items-center justify-center">
@@ -29,7 +32,7 @@ function OdLoginPage() {
               required
             />
           </div>
-          <div className="mb-8 z-10">
+          <div className="flex flex-col gap-3 mb-8 z-10">
             {/* <label
             for="password"
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white" 
@@ -43,7 +46,9 @@ function OdLoginPage() {
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-2xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 shadow-xl"
               required
             />
+            
           </div>
+          
           {/* <div className="flex items-start mb-5">
           <div className="flex items-center h-5">
             <input
@@ -61,12 +66,15 @@ function OdLoginPage() {
             Remember me
           </label>
         </div> */}
+          <Link to="/student">
+
           <button
             type="submit"
             className="text-white  z-10 bg-violet-800 hover:bg-violet-900 focus:ring-4 focus:outline-none focus:ring-violet-300 font-medium rounded-lg text-sm w-fit px-5 py-2.5 text-center dark:bg-violet-800 dark:hover:bg-violet-900 dark:focus:ring-violet-800 mx-auto shadow-lg"
           >
-            SignUp
+           LOGIN
           </button>
+          </Link>
         </form>
       </div>
     </>
