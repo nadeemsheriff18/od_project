@@ -13,6 +13,10 @@ function ODController() {
       reqDate: "12/12/2022",
       odDate: "15/12/2022",
       sub: "SIH",
+      Attendence : "65%",
+      ODs : "2",
+      sec:"A",
+      sem:"3"
     },
     {
       id: 2,
@@ -23,6 +27,10 @@ function ODController() {
       reqDate: "10/12/2022",
       odDate: "20/12/2022",
       sub: "WORKSHOP",
+      Attendence : "75%",
+      ODs : "2",
+      sec:"A",
+      sem:"3"
     },
     {
       id: 3,
@@ -33,6 +41,67 @@ function ODController() {
       reqDate: "01/12/2022",
       odDate: "10/12/2022",
       sub: "SIH",
+      Attendence : "85%",
+      ODs: "2",
+      sec:"A",
+      sem:"3"
+    },
+    {
+      id: 4,
+      name: "Jane Smith",
+      department: "Mechanical Engineering",
+      supervisor: "Dr. Johnson",
+      year: "4th Year",
+      reqDate: "01/12/2022",
+      odDate: "10/12/2022",
+      sub: "SIH",
+      Attendence : "85%",
+      ODs: "4",
+      sec:"A",
+      sem:"3"
+    },
+    {
+      id: 5,
+      name: "Jane Smith",
+      department: "Mechanical Engineering",
+      supervisor: "Dr. Johnson",
+      year: "4th Year",
+      reqDate: "01/12/2022",
+      odDate: "10/12/2022",
+      sub: "SIH",
+      Attendence : "85%",
+      ODs : "2",
+      sec:"A",
+      sem:"3"
+    },
+    {
+      id: 6,
+      name: "Jane Smith",
+      department: "Mechanical Engineering",
+      supervisor: "Dr. Johnson",
+      year: "4th Year",
+      reqDate: "01/12/2022",
+      odDate: "10/12/2022",
+      sub: "SIH",
+      Attendence : "85%",
+      ODs: "2",
+      sec:"A",
+      sem:"3"
+    },
+    {
+      id: 7,
+      name: "Jane Smith",
+      department: "Mechanical Engineering",
+      supervisor: "Dr. Johnson",
+      year: "4th Year ",
+      reqDate: "01/12/2022",
+      odDate: "10/12/2022",
+      sub: "SIH",
+      Attendence : "85%",
+      ODs: "0",
+      sec:"A",
+      sem:"3"
+
     },
   ]);
 
@@ -92,6 +161,7 @@ function ODController() {
           <div className="w-full max-w-4xl overflow-x-hidden">
             {requests.map(request => (
               <Card
+              
               live={false}
                 key={request.id}
                 data={request}

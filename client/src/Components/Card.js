@@ -25,17 +25,41 @@ function Card({ data, livve, onToggleExpand, isExpanded, onAccept, onDecline }) 
                   { label: "Department", value: data.department },
                   { label: "Supervisor", value: data.supervisor },
                   { label: "Year", value: data.year },
+                  { label: "Section", value: data.sec},
+                  { label: "Semester", value: data.sem},
                   { label: "Req Date", value: data.reqDate },
                   { label: "OD Date", value: data.odDate },
                   { label: "Subject", value: data.sub },
+                  
+                  
                 ].map(({ label, value }) => (
                   <div key={label} className="flex">
                     <p className="w-32 font-normal mr-4 text-purple-800 whitespace-nowrap overflow-hidden text-ellipsis">
                       <strong>{label}:</strong>
                     </p>
-                    <p className="flex-1 overflow-hidden text-ellipsis">{value}</p>
+                    <p className="textflex-1 overflow-hidden text-ellipsis">{value}</p>
                   </div>
                 ))}
+
+                {/* Attendance and ODs with conditional color */}
+                <div className="flex">
+                  <p className="w-32 font-normal mr-4 text-purple-800 whitespace-nowrap overflow-hidden text-ellipsis">
+                    <strong>Attendence:</strong>
+                  </p>
+                  <p className={`flex-1 font-semibold overflow-hidden text-ellipsis ${data.Attendence <= '75%' ? 'text-red-600' : 'text-green-600'}`}>
+                    {data.Attendence}
+                  </p>
+                </div>
+
+                <div className="flex">
+                  <p className="w-32 font-normal  mr-4 text-purple-800 whitespace-nowrap overflow-hidden text-ellipsis">
+                    <strong>ODs Granted:</strong>
+                  </p>
+                  <p className={`flex-1 overflow-hidden  font-semibold  text-ellipsis ${data.ODs >= 4 ? 'text-red-600' : 'text-green-600'}`}>
+                    {data.ODs}
+                  </p>
+                </div>
+
               </>
             ) : (
               <div>No data available</div>
@@ -59,6 +83,7 @@ function Card({ data, livve, onToggleExpand, isExpanded, onAccept, onDecline }) 
             </button>
           </div>
         )}
+
       </div>
           
       <div 

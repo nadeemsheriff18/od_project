@@ -14,7 +14,6 @@ root.render(
     <BrowserRouter>
     <Routes>
       <Route path="/" element={<LOGIN />} />
-      
      <Route path='/admin' element={<ODController />}/>
     </Routes></BrowserRouter>
   </React.StrictMode>
