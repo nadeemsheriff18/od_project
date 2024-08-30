@@ -17,8 +17,12 @@ root.render(
     <Routes>
       <Route path="/" element={<LOGIN />} />
      <Route path='/admin' element={<ODController />}/>
+     <Route path='/student' element={<Student />}/>
+
     </Routes></BrowserRouter>
     
-    {/* <Student /> */}
+    
+     {/* <History/>
+    <Odheader/>  */}
   </React.StrictMode>
 );
