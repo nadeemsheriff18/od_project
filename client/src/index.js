@@ -8,7 +8,7 @@ import Student from './Components/Student';
 import LOGIN from './Components/LOGIN';
 import ODController from './Components/ODController';
 import Odheader from './Components/Odheader';
-import { BrowserRouter,Route, Routes } from "react-router-dom";
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -18,7 +18,7 @@ root.render(
       <Route path="/" element={<LOGIN />} />
      <Route path='/admin' element={<ODController />}/>
     </Routes></BrowserRouter>
-    <LOGIN/>
+    
     {/* <Student /> */}
   </React.StrictMode>
 );
