@@ -6,21 +6,14 @@ import App from './App';
 import History from './Components/History';
 import Student from './Components/Student';
 import LOGIN from './Components/LOGIN';
-
+import ODController from './Components/ODController';
+import Odheader from './Components/Odheader';
+import { BrowserRouter,Route, Routes } from "react-router-dom";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <BrowserRouter>
-  <Routes>
-    <Route path="/" element={<LOGIN />} />
-    <Route path="/student" element={<Student />} />
-    <Route path="/history" element={<History />} />
-  </Routes>
-    
+  <React.StrictMode>
+    <LOGIN/>
     {/* <Student /> */}
-  </BrowserRouter>
-    
-  
+  </React.StrictMode>
 );
-
-
