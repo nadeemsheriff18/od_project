@@ -46,8 +46,8 @@ function Card({ data, livve, onToggleExpand, isExpanded, onAccept, onDecline }) 
                   <p className="w-32 font-normal mr-4 text-purple-800 whitespace-nowrap overflow-hidden text-ellipsis">
                     <strong>Attendence:</strong>
                   </p>
-                  <p className={`flex-1 font-semibold overflow-hidden text-ellipsis ${data.Attendence <= '75%' ? 'text-red-600' : 'text-green-600'}`}>
-                    {data.Attendence}
+                  <p className={`flex-1 font-semibold overflow-hidden text-ellipsis ${data.Attendence <= 75 ? 'text-red-600' : 'text-green-600'}`}>
+                    {data.Attendence}%
                   </p>
                 </div>
 

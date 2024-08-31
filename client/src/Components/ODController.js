@@ -13,7 +13,7 @@ function ODController() {
       reqDate: "12/12/2022",
       odDate: "15/12/2022",
       sub: "SIH",
-      Attendence : "65%",
+      Attendence : "65",
       ODs : "2",
       sec:"A",
       sem:"3"
@@ -27,7 +27,7 @@ function ODController() {
       reqDate: "10/12/2022",
       odDate: "20/12/2022",
       sub: "WORKSHOP",
-      Attendence : "75%",
+      Attendence : "75",
       ODs : "2",
       sec:"A",
       sem:"3"
@@ -41,7 +41,7 @@ function ODController() {
       reqDate: "01/12/2022",
       odDate: "10/12/2022",
       sub: "SIH",
-      Attendence : "85%",
+      Attendence : "85",
       ODs: "2",
       sec:"A",
       sem:"3"
@@ -55,7 +55,7 @@ function ODController() {
       reqDate: "01/12/2022",
       odDate: "10/12/2022",
       sub: "SIH",
-      Attendence : "85%",
+      Attendence : "85",
       ODs: "4",
       sec:"A",
       sem:"3"
@@ -69,7 +69,7 @@ function ODController() {
       reqDate: "01/12/2022",
       odDate: "10/12/2022",
       sub: "SIH",
-      Attendence : "85%",
+      Attendence : "85",
       ODs : "2",
       sec:"A",
       sem:"3"
@@ -83,7 +83,7 @@ function ODController() {
       reqDate: "01/12/2022",
       odDate: "10/12/2022",
       sub: "SIH",
-      Attendence : "85%",
+      Attendence : "85",
       ODs: "2",
       sec:"A",
       sem:"3"
@@ -97,7 +97,7 @@ function ODController() {
       reqDate: "01/12/2022",
       odDate: "10/12/2022",
       sub: "SIH",
-      Attendence : "85%",
+      Attendence : "85",
       ODs: "0",
       sec:"A",
       sem:"3"
