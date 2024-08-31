@@ -8,14 +8,14 @@ const port = 3001;
 app.use(express.json())
 app.use(cors())
 
-const pg = new Pg.Client({
-    user: 'postgres',
-    password: '160427',
-    host: 'localhost',
-    port: 5432,
-    database: 'OD'
-})
-pg.connect()
+// const pg = new Pg.Client({
+//     user: 'postgres',
+//     password: '160427',
+//     host: 'localhost',
+//     port: 5432,
+//     database: 'OD'
+// })
+// pg.connect()
 
 app.post('/signup', async (req,res)=>{
     const {email, password}= req.body

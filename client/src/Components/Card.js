@@ -41,7 +41,7 @@ function Card({ data, livve, onToggleExpand, isExpanded, onAccept, onDecline }) 
                   </div>
                 ))}
 
-                {/* Attendance and ODs with conditional color */}
+                {/* Attendance and ODs with conditional color */} 
                 <div className="flex">
                   <p className="w-32 font-normal mr-4 text-purple-800 whitespace-nowrap overflow-hidden text-ellipsis">
                     <strong>Attendence:</strong>
