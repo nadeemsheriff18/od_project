@@ -1,6 +1,20 @@
 import React from 'react';
 
+const formatDate = (dateStr) => {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('en-GB'); // Format as dd/mm/yyyy
+};
+
 function Card({ data, livve, onToggleExpand, isExpanded, onAccept, onDecline }) {
+  data.name = "KAVIN RAJ";
+  data.department = "CSBS";
+  data.Attendence = 75;
+  data.ODs = "3";
+  data.supervisor = "CSBS HOD";
+  data.year = "3";
+  data.sec = "A";
+  data.sem = "5";
+
   // Handler to stop click event from propagating
   const handleButtonClick = (event) => {
     event.stopPropagation();
@@ -25,41 +39,40 @@ function Card({ data, livve, onToggleExpand, isExpanded, onAccept, onDecline }) 
                   { label: "Department", value: data.department },
                   { label: "Supervisor", value: data.supervisor },
                   { label: "Year", value: data.year },
-                  { label: "Section", value: data.sec},
-                  { label: "Semester", value: data.sem},
-                  { label: "Req Date", value: data.reqDate },
-                  { label: "OD Date", value: data.odDate },
-                  { label: "Subject", value: data.sub },
-                  
-                  
+                  { label: "Section", value: data.sec },
+                  { label: "Semester", value: data.sem },
+                  { label: "Req Date", value: formatDate(data.ReqDate) },
+                  { label: "OD Date", value: `${formatDate(data.StartDate)} - ${formatDate(data.EndDate)}` },
+                  { label: "Subject", value: data.Subject },
                 ].map(({ label, value }) => (
-                  <div key={label} className="flex">
-                    <p className="w-32 font-normal mr-4 text-purple-800 whitespace-nowrap overflow-hidden text-ellipsis">
+                  <div key={label} className="flex flex-wrap mb-2">
+                    <p className="w-32 font-normal mr-4 text-purple-800">
                       <strong>{label}:</strong>
                     </p>
-                    <p className="textflex-1 overflow-hidden text-ellipsis">{value}</p>
+                    <p className="flex-1 break-words text-gray-600">
+                      {value}
+                    </p>
                   </div>
                 ))}
 
                 {/* Attendance and ODs with conditional color */} 
-                <div className="flex">
-                  <p className="w-32 font-normal mr-4 text-purple-800 whitespace-nowrap overflow-hidden text-ellipsis">
+                <div className="flex flex-wrap mb-2">
+                  <p className="w-32 font-normal mr-4 text-purple-800">
                     <strong>Attendence:</strong>
                   </p>
-                  <p className={`flex-1 font-semibold overflow-hidden text-ellipsis ${data.Attendence <= 75 ? 'text-red-600' : 'text-green-600'}`}>
+                  <p className={`flex-1 font-semibold ${data.Attendence <= 75 ? 'text-red-600' : 'text-green-600'}`}>
                     {data.Attendence}%
                   </p>
                 </div>
 
-                <div className="flex">
-                  <p className="w-32 font-normal  mr-4 text-purple-800 whitespace-nowrap overflow-hidden text-ellipsis">
+                <div className="flex flex-wrap mb-2">
+                  <p className="w-32 font-normal mr-4 text-purple-800">
                     <strong>ODs Granted:</strong>
                   </p>
-                  <p className={`flex-1 overflow-hidden  font-semibold  text-ellipsis ${data.ODs >= 4 ? 'text-red-600' : 'text-green-600'}`}>
+                  <p className={`flex-1 font-semibold ${data.ODs >= 4 ? 'text-red-600' : 'text-green-600'}`}>
                     {data.ODs}
                   </p>
                 </div>
-
               </>
             ) : (
               <div>No data available</div>
@@ -83,22 +96,15 @@ function Card({ data, livve, onToggleExpand, isExpanded, onAccept, onDecline }) 
             </button>
           </div>
         )}
-
       </div>
-          
+
       <div 
         className={`mt-3 shadow-xl rounded-md bg-white pl-4 pr-4 pb-2 pt-1 transition-all duration-200 ease-in-out ${isExpanded ? 'max-h-screen visible' : 'max-h-0 invisible overflow-hidden'}`}
         style={{ overflow: 'hidden' }}
       >
         <p><strong>Reason:</strong></p>
-        <p className={`mt-2 text-gray-600`}>
-          I hope this message finds you well. I am writing to seek your kind permission 
-          to attend a hackathon organized by [Organizing Body/College Name] on [Date(s) of 
-          the Hackathon]. The event will take place at [Venue], and it is a great opportunity 
-          for me to enhance my skills and gain practical experience in [mention the specific area 
-          or technology if relevant]. I assure you that I will complete all my academic responsibilities 
-          before and after the event, and I will not let this affect my coursework. I would be grateful 
-          for your approval to attend this event.
+        <p className="mt-2 text-gray-600 break-words">
+          {data.Reason}
         </p>
       </div>
     </div>

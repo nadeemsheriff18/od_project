@@ -1,116 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import Card from './Card';
 
 function ODController() {
   // State to manage the list of requests
-  const [requests, setRequests] = useState([
-    {
-      id: 1,
-      name: "Abinaya P",
-      department: "Computer Science and Business Systems",
-      supervisor: "HOD CSBS",
-      year: "3rd Year",
-      reqDate: "12/12/2022",
-      odDate: "15/12/2022",
-      sub: "SIH",
-      Attendence : "65",
-      ODs : "2",
-      sec:"A",
-      sem:"3"
-    },
-    {
-      id: 2,
-      name: "John Doe",
-      department: "Electrical Engineering",
-      supervisor: "Prof. Smith",
-      year: "2nd Year",
-      reqDate: "10/12/2022",
-      odDate: "20/12/2022",
-      sub: "WORKSHOP",
-      Attendence : "75",
-      ODs : "2",
-      sec:"A",
-      sem:"3"
-    },
-    {
-      id: 3,
-      name: "Jane Smith",
-      department: "Mechanical Engineering",
-      supervisor: "Dr. Johnson",
-      year: "4th Year",
-      reqDate: "01/12/2022",
-      odDate: "10/12/2022",
-      sub: "SIH",
-      Attendence : "85",
-      ODs: "2",
-      sec:"A",
-      sem:"3"
-    },
-    {
-      id: 4,
-      name: "Jane Smith",
-      department: "Mechanical Engineering",
-      supervisor: "Dr. Johnson",
-      year: "4th Year",
-      reqDate: "01/12/2022",
-      odDate: "10/12/2022",
-      sub: "SIH",
-      Attendence : "85",
-      ODs: "4",
-      sec:"A",
-      sem:"3"
-    },
-    {
-      id: 5,
-      name: "Jane Smith",
-      department: "Mechanical Engineering",
-      supervisor: "Dr. Johnson",
-      year: "4th Year",
-      reqDate: "01/12/2022",
-      odDate: "10/12/2022",
-      sub: "SIH",
-      Attendence : "85",
-      ODs : "2",
-      sec:"A",
-      sem:"3"
-    },
-    {
-      id: 6,
-      name: "Jane Smith",
-      department: "Mechanical Engineering",
-      supervisor: "Dr. Johnson",
-      year: "4th Year",
-      reqDate: "01/12/2022",
-      odDate: "10/12/2022",
-      sub: "SIH",
-      Attendence : "85",
-      ODs: "2",
-      sec:"A",
-      sem:"3"
-    },
-    {
-      id: 7,
-      name: "Jane Smith",
-      department: "Mechanical Engineering",
-      supervisor: "Dr. Johnson",
-      year: "4th Year ",
-      reqDate: "01/12/2022",
-      odDate: "10/12/2022",
-      sub: "SIH",
-      Attendence : "85",
-      ODs: "0",
-      sec:"A",
-      sem:"3"
-
-    },
-  ]);
-
+  const [requests, setRequests] = useState([]);
   // State to manage the accepted OD requests
   const [acceptedOD, setAcceptedOD] = useState([]);
-
   // State to manage the active tab
   const [activeTab, setActiveTab] = useState('odRequest');
   const [expandedCardId, setExpandedCardId] = useState(null);
+
+  // Fetch data from the server when the component mounts
+  useEffect(() => {
+    const fetchRequests = async () => {
+      try {
+        const response = await axios.get('/api/ODController/fetchOD');
+        
+        setRequests(response.data);
+      } catch (error) {
+        console.error('Error fetching requests:', error);
+      }
+    };
+
+    fetchRequests();
+  }, []);
 
   // Toggle the expanded state of a specific card
   const handleToggleExpand = (id) => {
@@ -161,8 +75,7 @@ function ODController() {
           <div className="w-full max-w-4xl overflow-x-hidden">
             {requests.map(request => (
               <Card
-              
-              live={false}
+                live={false}
                 key={request.id}
                 data={request}
                 isExpanded={expandedCardId === request.id}
@@ -180,20 +93,20 @@ function ODController() {
               <p>No live OD requests available at the moment.</p>
             ) : (
                 <>
-                <div className='text-3xl font-medium text-black' >LIVE OD Count : {acceptedOD.length}</div>
+                <div className='text-3xl font-medium text-black'>LIVE OD Count : {acceptedOD.length}</div>
                 <div className="w-full max-w-4xl overflow-x-hidden">
-                {acceptedOD.map(request => (
-                  <Card
-                    livve={true}
-                    key={request.id}
-                    data={request}
-                    isExpanded={false} // No need to expand the accepted requests
-                    onToggleExpand={() => {}}
-                    onAccept={() => {}}
-                    onDecline={() => {}}
-                  />
-                ))}
-              </div>
+                  {acceptedOD.map(request => (
+                    <Card
+                      live={true}
+                      key={request.id}
+                      data={request}
+                      isExpanded={false} // No need to expand the accepted requests
+                      onToggleExpand={() => {}}
+                      onAccept={() => {}}
+                      onDecline={() => {}}
+                    />
+                  ))}
+                </div>
                 </>          
             )}
           </div>
