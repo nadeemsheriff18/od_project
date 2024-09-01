@@ -7,13 +7,21 @@ import History from './Components/History';
 import Student from './Components/Student';
 import LOGIN from './Components/LOGIN';
 import ODController from './Components/ODController';
-import Odheader from './Components/Odheader';
-import { BrowserRouter,Route, Routes } from "react-router-dom";
+
+import Staff_login from './Components/Staff_login';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-    <LOGIN/>
-    {/* <Student /> */}
-  </React.StrictMode>
+  <BrowserRouter>
+    <Routes>
+      <Route path="/" element={<LOGIN />} />
+      <Route path="/student" element={<Student />} />
+      <Route path="/admin" element={<ODController />} />
+      <Route path='/history' element={<History />}/>
+      <Route path='/stafflogin' element={<Staff_login />}/>
+    </Routes>
+  </BrowserRouter>
+    
+    
+  
 );
