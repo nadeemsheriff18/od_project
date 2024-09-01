@@ -1,11 +1,8 @@
 import express from 'express';
 import cors from 'cors';
-import pool from './DB/DPPG.js'; // Ensure this file exports a configured pool
-import StudentRouter from './Routes/StudentRouter.js';
-import ODController from './Routes/ODcontrollerRouter.js'
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-
+import Pg from 'pg';
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 const app = express();
 const port = 3001;
 
@@ -14,43 +11,108 @@ app.use(express.json());
 app.use(cors());
 
 // Routers
-app.use('/api/Student', StudentRouter);
-app.use('/api/ODController', ODController);
 
-app.post('/signup', async (req, res) => {
-    const { email, password } = req.body;
-    const salt = bcrypt.genSaltSync(10);
-    const hashedPassword = bcrypt.hashSync(password, salt);
+//database
+const pg = new Pg.Client({
+    user: 'postgres',
+    password: '160427',
+    host: 'localhost',
+    port: 5432,
+    database: 'OD'
+})
 
-    try {
-        await pool.query('INSERT INTO student (email, pwd) VALUES ($1, $2);', [email, hashedPassword]);
-        const token = jwt.sign({ email }, 'secret', { expiresIn: '1hr' });
-        res.json({ email, token });
-    } catch (err) {
-        console.error(err);
-        res.json({ detail: err.detail });
+pg.connect()
+
+
+//staff login
+app.post('/staffsignup', async (req,res)=>{
+    const {email, password}= req.body
+    const salt=bcrypt.genSaltSync(10)
+    const hashedPassword=bcrypt.hashSync(password,salt)
+
+    try{
+        const signUp = await pg.query(`INSERT INTO staff_login (email, hashed_password) VALUES($1, $2);`,
+            [email, hashedPassword])
+        
+            const token =jwt.sign({email}, 'secret', {expiresIn: '1hr'})
+
+            res.json({email, token})
+        
     }
-});
+    catch(err){
+        console.log(err)
 
-app.post('/login', async (req, res) => {
-    const { email, password } = req.body;
-    try {
-        const student = await pool.query('SELECT * FROM student WHERE email = $1', [email]);
-
-        if (!student.rows.length) return res.json({ detail: 'User does not exist!' });
-
-        const success = await bcrypt.compare(password, student.rows[0].pwd);
-        if (success) {
-            const token = jwt.sign({ email }, 'secret', { expiresIn: '1hr' });
-            res.json({ email: student.rows[0].email, token });
-        } else {
-            res.json({ detail: 'Invalid password!' });
+        if (err) {
+            res.json({detail:err.detail})
         }
-    } catch (err) {
-        console.error(err);
     }
 });
 
-app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
+app.post('/stafflogin',async (req,res)=>{
+    const {email,password}= req.body
+    try{
+        const staff=await pg.query('SELECT * FROM staff_login Where email = $1', [email])
+
+        if(!staff.rows.length) return res.json({detail: 'User does not exist! '})
+
+            const success =await bcrypt.compare(password,staff.rows[0].hashed_password)
+            const token =jwt.sign({email}, 'secret', {expiresIn: '1hr'})
+            if(success){
+                res.json({'email': staff.rows[0].email,token})
+            }
+            else{
+                res.json({detail: 'Invalid password! '})
+            }
+    }
+    catch(err){
+        console.log(err)
+    }
+})
+
+//student login
+app.post('/studentsignup', async (req,res)=>{
+    const {email, password}= req.body
+    const salt=bcrypt.genSaltSync(10)
+    const hashedPassword=bcrypt.hashSync(password,salt)
+
+    try{
+        const signUp = await pg.query(`INSERT INTO student_login (email, hashed_pwd) VALUES($1, $2);`,
+            [email, hashedPassword])
+        
+            const token =jwt.sign({email}, 'secret', {expiresIn: '1hr'})
+
+            res.json({email, token})
+        
+    }
+    catch(err){
+        console.log(err)
+
+        if (err) {
+            res.json({detail:err.detail})
+        }
+    }
 });
+
+app.post('/studentlogin',async (req,res)=>{
+    const {email,password}= req.body
+    try{
+        const student=await pg.query('SELECT * FROM student_login Where email = $1', [email])
+
+        if(!student.rows.length) return res.json({detail: 'User does not exist! '})
+
+            const success =await bcrypt.compare(password,student.rows[0].hashed_pwd)
+            const token =jwt.sign({email}, 'secret', {expiresIn: '1hr'})
+            if(success){
+                res.json({'email': student.rows[0].email,token})
+            }
+            else{
+                res.json({detail: 'Invalid password! '})
+            }
+    }
+    catch(err){
+        console.log(err)
+    }
+})
+ app.listen(port,()=>{
+    console.log(`server is running on port ${port}`);
+ });
