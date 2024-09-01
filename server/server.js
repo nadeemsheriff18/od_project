@@ -5,6 +5,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import ODController from './Routes/ODcontrollerRouter.js';
 import Student from './Routes/StudentRouter.js';
+import pg from "./DB/DPPG.js";
 const app = express();
 const port = 3001;
 
@@ -14,7 +15,7 @@ app.use(cors());
 
 // Routers
 app.use('/api/ODController/',ODController);
-app.use('/api/Student/submitOD',Student);
+app.use('/api/Student/',Student);
 //database
 // const pg = new Pg.Client({
 //     user: 'postgres',

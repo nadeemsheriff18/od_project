@@ -6,14 +6,9 @@ const formatDate = (dateStr) => {
 };
 
 function Card({ data, livve, onToggleExpand, isExpanded, onAccept, onDecline }) {
-  data.name = "KAVIN RAJ";
-  data.department = "CSBS";
-  data.Attendence = 75;
-  data.ODs = "3";
+ 
   data.supervisor = "CSBS HOD";
-  data.year = "3";
-  data.sec = "A";
-  data.sem = "5";
+  
 
   // Handler to stop click event from propagating
   const handleButtonClick = (event) => {
@@ -26,8 +21,8 @@ function Card({ data, livve, onToggleExpand, isExpanded, onAccept, onDecline }) 
       onClick={onToggleExpand}
     >
       <div className="flex">
-        <div className="w-16 h-16 rounded-full bg-purple-200 flex items-center justify-center">
-          <span className="text-xl font-bold text-purple-700">A</span>
+        <div className={`w-16 h-16 rounded-full  flex items-center justify-center ${data.Type==="on-duty"? 'text-purple-700 bg-purple-200':'text-blue-700 bg-blue-200'}`}>
+          <span className="text-md font-bold">{data.Type}</span>
         </div>
 
         <div className="ml-4 flex-1">
@@ -35,14 +30,15 @@ function Card({ data, livve, onToggleExpand, isExpanded, onAccept, onDecline }) 
             {data ? (
               <>
                 {[
-                  { label: "Name", value: data.name },
+                  { label: "Name", value: data.stud_name },
+                  { label: "Register", value: data.RegNo},
                   { label: "Department", value: data.department },
                   { label: "Supervisor", value: data.supervisor },
                   { label: "Year", value: data.year },
                   { label: "Section", value: data.sec },
                   { label: "Semester", value: data.sem },
                   { label: "Req Date", value: formatDate(data.ReqDate) },
-                  { label: "OD Date", value: `${formatDate(data.StartDate)} - ${formatDate(data.EndDate)}` },
+                  { label: `${data.Type} Date`, value: `${formatDate(data.StartDate)} - ${formatDate(data.EndDate)}` },
                   { label: "Subject", value: data.Subject },
                 ].map(({ label, value }) => (
                   <div key={label} className="flex flex-wrap mb-2">
@@ -67,10 +63,10 @@ function Card({ data, livve, onToggleExpand, isExpanded, onAccept, onDecline }) 
 
                 <div className="flex flex-wrap mb-2">
                   <p className="w-32 font-normal mr-4 text-purple-800">
-                    <strong>ODs Granted:</strong>
+                    <strong>{data.type} Granted:</strong>
                   </p>
                   <p className={`flex-1 font-semibold ${data.ODs >= 4 ? 'text-red-600' : 'text-green-600'}`}>
-                    {data.ODs}
+                    {data.Type ==="on-duty"?data.OD:data.Permission}
                   </p>
                 </div>
               </>
