@@ -3,6 +3,8 @@ import cors from 'cors';
 import Pg from 'pg';
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import ODController from './Routes/ODcontrollerRouter.js';
+import Student from './Routes/StudentRouter.js';
 const app = express();
 const port = 3001;
 
@@ -11,17 +13,18 @@ app.use(express.json());
 app.use(cors());
 
 // Routers
-
+app.use('/api/ODController/',ODController);
+app.use('/api/Student/submitOD',Student);
 //database
-const pg = new Pg.Client({
-    user: 'postgres',
-    password: '160427',
-    host: 'localhost',
-    port: 5432,
-    database: 'OD'
-})
+// const pg = new Pg.Client({
+//     user: 'postgres',
+//     password: '160427',
+//     host: 'localhost',
+//     port: 5432,
+//     database: 'OD'
+// })
 
-pg.connect()
+// pg.connect()
 
 
 //staff login
