@@ -15,7 +15,7 @@ const formattedDate = `${year}-${month}-${day}`;
     const [endDate, setEndDate] = useState('');
     const [reason, setReason] = useState('');
     const [subject , setSubject ]= useState('');
-    const RegNo = 221401031;
+    const RegNo = 221401050;
     const date = new Date();
     const today = date.toLocaleDateString();
 
