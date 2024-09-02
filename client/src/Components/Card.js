@@ -5,9 +5,11 @@ const formatDate = (dateStr) => {
   return date.toLocaleDateString('en-GB'); // Format as dd/mm/yyyy
 };
 
-function Card({ data, livve, onToggleExpand, isExpanded, onAccept, onDecline }) {
+function Card({ data, live, onToggleExpand, isExpanded, onAccept, onDecline }) {
  
   data.supervisor = "CSBS HOD";
+  let od=0;
+  data.Type==='on-duty'? od=data.OD:od=data.Permission;
   
 
   // Handler to stop click event from propagating
@@ -54,19 +56,20 @@ function Card({ data, livve, onToggleExpand, isExpanded, onAccept, onDecline }) 
                 {/* Attendance and ODs with conditional color */} 
                 <div className="flex flex-wrap mb-2">
                   <p className="w-32 font-normal mr-4 text-purple-800">
-                    <strong>Attendence:</strong>
+                    <strong>Attendenc:</strong>
                   </p>
                   <p className={`flex-1 font-semibold ${data.Attendence <= 75 ? 'text-red-600' : 'text-green-600'}`}>
                     {data.Attendence}%
                   </p>
                 </div>
 
-                <div className="flex flex-wrap mb-2">
+                <div className="flex flex-wrap mb-2"> 
                   <p className="w-32 font-normal mr-4 text-purple-800">
-                    <strong>{data.type} Granted:</strong>
+                    <strong>{`${data.Type}(s)`}:</strong>
                   </p>
-                  <p className={`flex-1 font-semibold ${data.ODs >= 4 ? 'text-red-600' : 'text-green-600'}`}>
-                    {data.Type ==="on-duty"?data.OD:data.Permission}
+                  
+                  <p className={`flex-1 font-semibold ${od >= 4 ? 'text-red-600' : 'text-green-600'}`}>
+                    {od}
                   </p>
                 </div>
               </>
@@ -75,23 +78,22 @@ function Card({ data, livve, onToggleExpand, isExpanded, onAccept, onDecline }) 
             )}
           </div>
         </div>
-
-        {!livve && (
           <div className="flex justify-center items-center gap-4 mt-4">
+          {!live && (
             <button 
               className="bg-white shadow-md text-purple-700 font-medium py-2 px-4 rounded hover:bg-purple-200"
               onClick={(e) => { handleButtonClick(e); onAccept(); }}
             >
               Accept
-            </button>
+            </button>)}
             <button 
               className="bg-white shadow-md text-purple-700 font-medium py-2 px-4 rounded hover:bg-purple-200"
               onClick={(e) => { handleButtonClick(e); onDecline(); }}
             >
-              Decline
+              {!live? "Decline":"Remove"}
             </button>
           </div>
-        )}
+        
       </div>
 
       <div 

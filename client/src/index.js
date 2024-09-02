@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter , Route, Routes } from 'react-router-dom';
 import './index.css';
 import App from './App';
+import Odheader from './Components/Odheader';
 import History from './Components/History';
 import Student from './Components/Student';
 import LOGIN from './Components/LOGIN';
@@ -12,6 +13,7 @@ import Staff_login from './Components/Staff_login';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <BrowserRouter>
+    <Odheader/>
     <Routes>
       <Route path="/" element={<LOGIN />} />
       <Route path="/student" element={<Student />} />

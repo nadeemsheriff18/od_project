@@ -1,51 +1,94 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import Card from './Card';
 
 function ODController() {
-  // State to manage the list of requests
   const [requests, setRequests] = useState([]);
-  // State to manage the accepted OD requests
   const [acceptedOD, setAcceptedOD] = useState([]);
-  // State to manage the active tab
   const [activeTab, setActiveTab] = useState('odRequest');
   const [expandedCardId, setExpandedCardId] = useState(null);
 
-  // Fetch data from the server when the component mounts
-  useEffect(() => {
-    const fetchRequests = async () => {
-      try {
-        const response = await axios.get('/api/ODController/fetchOD');
-        
+  // Fetch data based on the active tab
+  const fetchRequests = useCallback(async () => {
+    try {
+      const response = await axios.get(`/api/ODController/fetchOD/${activeTab}`);
+      if (activeTab === 'odRequest') {
         setRequests(response.data);
-      } catch (error) {
-        console.error('Error fetching requests:', error);
+      } else if (activeTab === 'liveOd') {
+        setAcceptedOD(response.data);
       }
-    };
+    } catch (error) {
+      console.error('Error fetching requests:', error);
+    }
+  }, [activeTab]);
 
+  // Fetch data initially and when the active tab changes
+  useEffect(() => {
     fetchRequests();
-  }, []);
+  }, [fetchRequests]);
 
   // Toggle the expanded state of a specific card
-  const handleToggleExpand = (id) => {
-    setExpandedCardId(expandedCardId === id ? null : id);
-  };
+  const handleToggleExpand = useCallback((id) => {
+    setExpandedCardId(prevId => (prevId === id ? null : id));
+  }, []);
 
-  // Handler to change the active tab
-  const handleTabChange = (tab) => {
+  const handleTabChange = useCallback((tab) => {
     setActiveTab(tab);
-  };
+  }, []);
 
-  // Handle Accept and Decline actions
-  const handleAccept = (id) => {
+  const handleAccept = useCallback(async (id, RegNo ) => {
     const acceptedRequest = requests.find(request => request.id === id);
-    setRequests(requests.filter(request => request.id !== id));
-    setAcceptedOD([...acceptedOD, acceptedRequest]);
-  };
+    setRequests(prevRequests => prevRequests.filter(request => request.id !== id));
+    setAcceptedOD(prevAcceptedOD => [...prevAcceptedOD, acceptedRequest]);
+    const isRequestTab = activeTab === 'odRequest';
+    try {
+      await axios.patch(`/api/ODController/updateStatus`, {
+        id,
+        RegNo,
+        status: 1,
+        isRequestTab
+         // Update status to 1 for accepted requests
+      });
 
-  const handleDecline = (id) => {
-    setRequests(requests.filter(request => request.id !== id));
-  };
+      // Re-fetch data to ensure UI is updated
+      fetchRequests();
+    } catch (error) {
+      console.error('Error updating status:', error);
+    }
+  }, [requests, fetchRequests]);
+
+  const handleDecline = useCallback(async (id, RegNo) => {
+    const requestToDecline = requests.find(request => request.id === id);
+    const isRequestTab = activeTab === 'odRequest';
+
+    // Remove the declined request from the respective state
+    if (isRequestTab) {
+      setRequests(prevRequests => prevRequests.filter(request => request.id !== id));
+    } else {
+      setAcceptedOD(prevAcceptedOD => prevAcceptedOD.filter(request => request.id !== id));
+    }
+
+    try {
+      await axios.patch(`/api/ODController/updateStatus`, {
+        id,
+        RegNo,
+        status: -1 ,// Update status to -1 for declined requests
+        isRequestTab
+      });
+
+      // Re-fetch data to ensure UI is updated
+      fetchRequests();
+    } catch (error) {
+      console.error('Error declining request:', error);
+
+      // Rollback if there's an error
+      if (isRequestTab) {
+        setRequests(prevRequests => [...prevRequests, requestToDecline]);
+      } else {
+        setAcceptedOD(prevAcceptedOD => [...prevAcceptedOD, requestToDecline]);
+      }
+    }
+  }, [requests, acceptedOD, activeTab, fetchRequests]);
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen flex flex-col items-center overflow-x-hidden">
@@ -53,7 +96,6 @@ function ODController() {
         <h2 className="text-2xl font-semibold text-purple-700 mt-2">OD REQUEST</h2>
       </div>
       
-      {/* Tabs Navigation */}
       <div className="mt-4 flex border-b border-gray-300">
         <button
           className={`py-2 px-4 text-lg font-medium ${activeTab === 'odRequest' ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-600'}`}
@@ -69,21 +111,24 @@ function ODController() {
         </button>
       </div>
 
-      {/* Tab Content */}
       <div className="mt-4 flex flex-col items-center">
         {activeTab === 'odRequest' && (
           <div className="w-full max-w-4xl overflow-x-hidden">
-            {requests.map(request => (
-              <Card
-                live={false}
-                key={request.id}
-                data={request}
-                isExpanded={expandedCardId === request.id}
-                onToggleExpand={() => handleToggleExpand(request.id)}
-                onAccept={() => handleAccept(request.id)}
-                onDecline={() => handleDecline(request.id)}
-              />
-            ))}
+            {requests.length === 0 ? (
+              <p>No OD requests available at the moment.</p>
+            ) : (
+              requests.map(request => (
+                <Card
+                  live={false}
+                  key={request.id}
+                  data={request}
+                  isExpanded={expandedCardId === request.id}
+                  onToggleExpand={() => handleToggleExpand(request.id)}
+                  onAccept={() => handleAccept(request.id, request.RegNo )}
+                  onDecline={() => handleDecline(request.id, request.RegNo)}
+                />
+              ))
+            )}
           </div>
         )}
 
@@ -92,7 +137,7 @@ function ODController() {
             {acceptedOD.length === 0 ? (
               <p>No live OD requests available at the moment.</p>
             ) : (
-                <>
+              <>
                 <div className='text-3xl font-medium text-black'>LIVE OD Count : {acceptedOD.length}</div>
                 <div className="w-full max-w-4xl overflow-x-hidden">
                   {acceptedOD.map(request => (
@@ -100,14 +145,14 @@ function ODController() {
                       live={true}
                       key={request.id}
                       data={request}
-                      isExpanded={false} // No need to expand the accepted requests
-                      onToggleExpand={() => {}}
+                      isExpanded={expandedCardId === request.id}
+                      onToggleExpand={() => handleToggleExpand(request.id)}
                       onAccept={() => {}}
-                      onDecline={() => {}}
+                      onDecline={() => handleDecline(request.id, request.RegNo)}
                     />
                   ))}
                 </div>
-                </>          
+              </>
             )}
           </div>
         )}
