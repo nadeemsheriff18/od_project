@@ -67,7 +67,6 @@ function ODController() {
     } else {
       setAcceptedOD(prevAcceptedOD => prevAcceptedOD.filter(request => request.id !== id));
     }
-
     try {
       await axios.patch(`/api/ODController/updateStatus`, {
         id,

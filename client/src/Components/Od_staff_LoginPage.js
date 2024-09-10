@@ -3,9 +3,6 @@ import { useState } from "react";
 import { Navigate } from "react-router-dom";
 import {useCookies} from 'react-cookie';
 function Od_staff_LoginPage() {
-  
-
-
     const [cookies, setCookie, removeCookie] =useCookies(null)
     const [isLogin, setIsLogin] = useState(true)
     const [error, setError]=useState(null)
@@ -19,7 +16,7 @@ console.log(cookies)
         setIsLogin(status)
         setError(null)
     }
-
+    
     const handleSubmit= async (e, endpoint)=>{
         e.preventDefault()
         if(!isLogin && password!==confirmPassword){
@@ -39,9 +36,6 @@ console.log(cookies)
         }else{
             setCookie('Email', data.email)
             setCookie('AuthToken',data.token);
-
-            
-            
             window.location.replace("http://localhost:3000/admin")
 
         }

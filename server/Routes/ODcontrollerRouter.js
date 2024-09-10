@@ -93,7 +93,7 @@ router.patch('/updateStatus', async (req, res) => {
           SET "Permission" = "Permission" + 1 
           WHERE "RegNo" = $1;
         `;
-      } else if (!isRequestTab && status === 1) {
+      } else if (!isRequestTab && status === -1) {
         // Closed: Decrease Permission count
         updateCountQuery = `
           UPDATE public."ODsummary" 
@@ -109,7 +109,7 @@ router.patch('/updateStatus', async (req, res) => {
           SET "OD" = "OD" + 1 
           WHERE "RegNo" = $1;
         `;
-      } else if (!isRequestTab && status === 1) {
+      } else if (!isRequestTab && status === -1) {
         // Closed: Decrease OD count
         updateCountQuery = `
           UPDATE public."ODsummary" 

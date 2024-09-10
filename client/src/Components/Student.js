@@ -88,11 +88,13 @@ const Student = () => {
             <div className="w-full min-h-screen bg-violet-100 pt-24">
                 <div className="flex justify-evenly items-center pt-7 px-24">
                     <div>
-                        <img 
+                    
+                        OD : 
+                        {/* <img 
                             src="./assets/download.png" 
                             alt="Profile of Kavinraj" 
-                            className="w-[70%] h-[60%] rounded-3xl" 
-                        />
+                            className="w-[70%] h-[60%] rounded-3xl opacity-0" 
+                        /> */}
                     </div>
                     <div className="flex flex-col gap-2 rounded-xl bg-[#fcfafc] p-4 font-sans text-xl">
                         <p>Name: {studentData?.stud_name || 'Loading...'}</p>
@@ -102,14 +104,23 @@ const Student = () => {
                         <p>Semester:  {studentData?.sem|| 'Loading...'}</p>
                     </div>
                     <div>
-                        Attendance
+                    
+                        <div>
+                        OD :
+                        
+                    </div>
+                    <div>
+                    
+                        Attendance:
+                    </div>
+                        
                     </div>
                 </div>
                 <div className="flex flex-col bg-[#fcfafc] mt-9 mx-16 rounded-xl">
                     <form onSubmit={handleSubmit}>
                         <div className="flex justify-evenly items-center py-3 px-10">
                             <button type="button" className="bg-violet-100 rounded-xl p-2">OD request</button>
-                            <button type="button">Attendance</button>
+                            {/* <button type="button">Attendance</button> */}
                             <Link to="/history">
                                 <button type="button">History</button>
                             </Link>
@@ -131,7 +142,7 @@ const Student = () => {
                                 <div className="flex flex-col">
                                     <label htmlFor="startDate">Start date</label>
                                     <input 
-                                        required
+                                        requiredw
                                         type="date" 
                                         name="startDate" 
                                         id="startDate" 
