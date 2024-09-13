@@ -19,8 +19,9 @@ function Card({ data, live, onToggleExpand, isExpanded, onAccept, onDecline }) {
 
   return (
     <div 
-      className="mt-8 shadow-lg bg-violet-100 rounded-lg p-6 max-w-3xl w-full cursor-pointer" 
+      className="mt-8  shadow-lg bg-violet-100 rounded-lg p-6 max-w-3xl w-full cursor-pointer z-10" 
       onClick={onToggleExpand}
+      
     >
       <div className="flex">
         <div className={`w-16 h-16 rounded-full  flex items-center justify-center ${data.Type==="on-duty"? 'text-purple-700 bg-purple-200':'text-blue-700 bg-blue-200'}`}>

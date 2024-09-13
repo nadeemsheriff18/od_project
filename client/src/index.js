@@ -21,6 +21,7 @@ root.render(
       <Route path='/history' element={<History />}/>
       <Route path='/stafflogin' element={<Staff_login />}/>
     </Routes>
+    <Odheader/>
   </BrowserRouter>
     
     

@@ -59,7 +59,7 @@ router.patch('/updateStatus', async (req, res) => {
       WHERE "RegNo" = $1 AND id = $2;
     `;
     const fetchTypeResult = await client.query(fetchTypeQuery, [RegNo, id]);
-
+      
     if (fetchTypeResult.rowCount === 0) {
       await client.query('ROLLBACK');
       return res.status(404).json({ message: 'Record not found' });

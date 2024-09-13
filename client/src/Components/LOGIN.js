@@ -4,7 +4,7 @@ import Odheader from "./Odheader";
 function LOGIN() {
   return (
     <div className="relative">
-      <Odheader />
+      
       <Od_stu_LoginPage />
     </div>
   );
