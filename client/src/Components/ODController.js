@@ -7,7 +7,8 @@ function ODController() {
   const [acceptedOD, setAcceptedOD] = useState([]);
   const [activeTab, setActiveTab] = useState('odRequest');
   const [expandedCardId, setExpandedCardId] = useState(null);
-  const [subTab , setSubTab] = useState(1)
+  const [subTab , setSubTab] = useState(1);
+  const [subSections, setSubSections] = useState('A');
 
   // Fetch data based on the active tab
   const fetchRequests = useCallback(async () => {
@@ -38,6 +39,12 @@ function ODController() {
   const handleTabChange = useCallback((tab) => {
     setActiveTab(tab);
   }, []);
+  const  handleSubSectionChange = useCallback((section )=>{
+    
+    setSubSections(section);
+  },[]);
+
+  
 
   const handleAccept = useCallback(async (id, RegNo ) => {
     const acceptedRequest = requests.find(request => request.id === id);
@@ -91,39 +98,15 @@ function ODController() {
       }
     }
   }, [requests, acceptedOD, activeTab, fetchRequests]);
-
+  const Years = [1,2,3,4];
+  const sections = ["A","B","C"];
   return (
     <div className="p-6 bg-gray-50 min-h-screen flex flex-col items-center overflow-x-hidden">
       <div className="text-center">
         <h2 className="text-2xl font-semibold text-purple-700 mt-2">OD REQUEST</h2>
       </div>
-       {/* New Tabs */}
-       <div className="mt-4 flex border-b border-gray-300">
-        <button
-          className={`py-2 px-4 text-lg font-medium ${subTab === 1 ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-600'}`}
-          onClick={() => handleSubTabChange(1)}
-        >
-          Tab 1
-        </button>
-        <button
-          className={`py-2 px-4 text-lg font-medium ${subTab === 2 ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-600'}`}
-          onClick={() => handleSubTabChange(2)}
-        >
-          Tab 2
-        </button>
-        <button
-          className={`py-2 px-4 text-lg font-medium ${subTab === 3 ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-600'}`}
-          onClick={() => handleSubTabChange(3)}
-        >
-          Tab 3
-        </button>
-        <button
-          className={`py-2 px-4 text-lg font-medium ${subTab === 4 ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-600'}`}
-          onClick={() => handleSubTabChange(4)}
-        >
-          Tab 4
-        </button>
-      </div>
+      
+       
       <div className="mt-4 flex border-b border-gray-300">
         <button
           className={`py-2 px-4 text-lg font-medium ${activeTab === 'odRequest' ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-600'}`}
@@ -138,7 +121,34 @@ function ODController() {
           LIVE OD / PERMISSION
         </button>
       </div>
+      <div className='flex '>
+       {/* New Tabs */
+       Years.map(year => (
+        <button
+          className={`py-2 px-4 text-lg font-medium ${subTab === year ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-600'}`}
+          onClick={() => handleSubTabChange(year)}
+        >
+          {year} year
+          
+        </button>
+       ))}
+       
+       </div>
+       <div className='flex'>{sections.map(section=>(
+            <div>
+              <button
+              className={`py-2 px-4 text-lg font-medium ${subSections === section ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-600'}`}
+              onClick={(t) => handleSubSectionChange(section 
 
+
+                
+              )}
+              >
+              {section}
+              </button>
+            </div>
+          ))}
+          </div>
       <div className="mt-4 flex flex-col items-center p-4">
         
         {activeTab === 'odRequest' && (

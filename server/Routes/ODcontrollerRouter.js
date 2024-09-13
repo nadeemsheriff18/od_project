@@ -34,7 +34,7 @@ router.get('/fetchOD/:activeTab', async (req, res) => {
         ON a."RegNo" = b."rollno"
       LEFT JOIN public."ODsummary" AS c 
         ON a."RegNo" = c."RegNo"
-      WHERE a."Astatus" = $1;
+      WHERE a."Astatus" = $1 ;
     `;
     const result = await pool.query(query, [status]);
     res.status(200).json(result.rows);
