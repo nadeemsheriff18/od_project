@@ -7,6 +7,9 @@ import pool from '../DB/DPPG.js'; // Ensure this file exports a configured pool
 // Fetch requests based on the active tab
 router.get('/fetchOD/:activeTab', async (req, res) => {
   const status = req.params.activeTab === 'odRequest' ? 0 : 1;
+  const { year, section } = req.query;
+  console.log('Year:', year, 'Section:', section); // Log to verify
+
   try {
     const query = `
       SELECT 
@@ -34,9 +37,10 @@ router.get('/fetchOD/:activeTab', async (req, res) => {
         ON a."RegNo" = b."rollno"
       LEFT JOIN public."ODsummary" AS c 
         ON a."RegNo" = c."RegNo"
-      WHERE a."Astatus" = $1 ;
+      WHERE a."Astatus" = $1 AND b.year = $2 AND b.sec = $3;
     `;
-    const result = await pool.query(query, [status]);
+    const result = await pool.query(query, [status, year, section]);
+    console.log('Result:', result.rows); // Log the result
     res.status(200).json(result.rows);
   } catch (err) {
     console.error('Error fetching data:', err);

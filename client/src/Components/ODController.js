@@ -7,22 +7,30 @@ function ODController() {
   const [acceptedOD, setAcceptedOD] = useState([]);
   const [activeTab, setActiveTab] = useState('odRequest');
   const [expandedCardId, setExpandedCardId] = useState(null);
-  const [subTab , setSubTab] = useState(1);
+  const [subTab, setSubTab] = useState(1);
   const [subSections, setSubSections] = useState('A');
 
   // Fetch data based on the active tab
   const fetchRequests = useCallback(async () => {
     try {
-      const response = await axios.get(`/api/ODController/fetchOD/${activeTab}`);
+      console.log(subTab, subSections); // Check if these are being passed correctly
+      const response = await axios.get(`/api/ODController/fetchOD/${activeTab}`, {
+        params: {
+          year: subTab,
+          section: subSections,
+        },
+      });
+      console.log('Response Data:', response.data); // Check what data is being returned
+  
       if (activeTab === 'odRequest') {
-        setRequests(response.data);
+        setRequests(response.data); // Ensure the data is being set properly
       } else if (activeTab === 'liveOd') {
         setAcceptedOD(response.data);
       }
     } catch (error) {
       console.error('Error fetching requests:', error);
     }
-  }, [activeTab]);
+  }, [activeTab, subTab, subSections]);
 
   // Fetch data initially and when the active tab changes
   useEffect(() => {
@@ -33,20 +41,21 @@ function ODController() {
   const handleToggleExpand = useCallback((id) => {
     setExpandedCardId(prevId => (prevId === id ? null : id));
   }, []);
-  const handleSubTabChange  = useCallback ((subTab)=>{
+  const handleSubTabChange = useCallback((subTab) => {
     setSubTab(subTab);
-  },[]);
+
+  }, []);
   const handleTabChange = useCallback((tab) => {
     setActiveTab(tab);
   }, []);
-  const  handleSubSectionChange = useCallback((section )=>{
+  const handleSubSectionChange = useCallback((section) => {
     
     setSubSections(section);
-  },[]);
+  }, []);
 
-  
 
-  const handleAccept = useCallback(async (id, RegNo ) => {
+
+  const handleAccept = useCallback(async (id, RegNo) => {
     const acceptedRequest = requests.find(request => request.id === id);
     setRequests(prevRequests => prevRequests.filter(request => request.id !== id));
     setAcceptedOD(prevAcceptedOD => [...prevAcceptedOD, acceptedRequest]);
@@ -57,7 +66,7 @@ function ODController() {
         RegNo,
         status: 1,
         isRequestTab
-         // Update status to 1 for accepted requests
+        // Update status to 1 for accepted requests
       });
 
       // Re-fetch data to ensure UI is updated
@@ -66,7 +75,7 @@ function ODController() {
       console.error('Error updating status:', error);
     }
   }, [requests, fetchRequests]);
-  
+
   const handleDecline = useCallback(async (id, RegNo) => {
     const requestToDecline = requests.find(request => request.id === id);
     const isRequestTab = activeTab === 'odRequest';
@@ -81,7 +90,7 @@ function ODController() {
       await axios.patch(`/api/ODController/updateStatus`, {
         id,
         RegNo,
-        status: -1 ,// Update status to -1 for declined requests
+        status: -1,// Update status to -1 for declined requests
         isRequestTab
       });
 
@@ -98,15 +107,15 @@ function ODController() {
       }
     }
   }, [requests, acceptedOD, activeTab, fetchRequests]);
-  const Years = [1,2,3,4];
-  const sections = ["A","B","C"];
+  const Years = [1, 2, 3, 4];
+  const sections = ["A", "B", "C"];
   return (
     <div className="p-6 bg-gray-50 min-h-screen flex flex-col items-center overflow-x-hidden">
       <div className="text-center">
         <h2 className="text-2xl font-semibold text-purple-700 mt-2">OD REQUEST</h2>
       </div>
-      
-       
+
+
       <div className="mt-4 flex border-b border-gray-300">
         <button
           className={`py-2 px-4 text-lg font-medium ${activeTab === 'odRequest' ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-600'}`}
@@ -122,35 +131,35 @@ function ODController() {
         </button>
       </div>
       <div className='flex '>
-       {/* New Tabs */
-       Years.map(year => (
-        <button
-          className={`py-2 px-4 text-lg font-medium ${subTab === year ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-600'}`}
-          onClick={() => handleSubTabChange(year)}
-        >
-          {year} year
-          
-        </button>
-       ))}
-       
-       </div>
-       <div className='flex'>{sections.map(section=>(
-            <div>
-              <button
-              className={`py-2 px-4 text-lg font-medium ${subSections === section ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-600'}`}
-              onClick={(t) => handleSubSectionChange(section 
+        {/* New Tabs */
+          Years.map(year => (
+            <button
+              className={`py-2 px-4 text-lg font-medium ${subTab === year ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-600'}`}
+              onClick={() => handleSubTabChange(year)}
+            >
+              {year} year
 
-
-                
-              )}
-              >
-              {section}
-              </button>
-            </div>
+            </button>
           ))}
-          </div>
+
+      </div>
+      <div className='flex'>{sections.map(section => (
+        <div>
+          <button
+            className={`py-2 px-4 text-lg font-medium ${subSections === section ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-600'}`}
+            onClick={(t) => handleSubSectionChange(section
+
+
+
+            )}
+          >
+            {section}
+          </button>
+        </div>
+      ))}
+      </div>
       <div className="mt-4 flex flex-col items-center p-4">
-        
+
         {activeTab === 'odRequest' && (
           <div className="w-full max-w-4xl overflow-x-hidden m-4">
             {requests.length === 0 ? (
@@ -163,7 +172,7 @@ function ODController() {
                   data={request}
                   isExpanded={expandedCardId === request.id}
                   onToggleExpand={() => handleToggleExpand(request.id)}
-                  onAccept={() => handleAccept(request.id, request.RegNo )}
+                  onAccept={() => handleAccept(request.id, request.RegNo)}
                   onDecline={() => handleDecline(request.id, request.RegNo)}
                 />
               ))
@@ -186,7 +195,7 @@ function ODController() {
                       data={request}
                       isExpanded={expandedCardId === request.id}
                       onToggleExpand={() => handleToggleExpand(request.id)}
-                      onAccept={() => {}}
+                      onAccept={() => { }}
                       onDecline={() => handleDecline(request.id, request.RegNo)}
                     />
                   ))}
