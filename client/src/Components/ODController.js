@@ -108,7 +108,12 @@ function ODController() {
     }
   }, [requests, acceptedOD, activeTab, fetchRequests]);
   const Years = [1, 2, 3, 4];
-  const sections = ["A", "B", "C"];
+  const year1 = ["A","B","C"]
+  const year2 = ["A","B"]
+  const year3 = ["A","B"]
+  const year4 = ["A"]
+
+  const sections = [year1,year2,year3,year4];
   return (
     <div className="p-6 bg-gray-50 min-h-screen flex flex-col items-center overflow-x-hidden">
       <div className="text-center">
@@ -131,6 +136,7 @@ function ODController() {
         </button>
       </div>
       <div className='flex '>
+
         {/* New Tabs */
           Years.map(year => (
             <button
@@ -138,19 +144,15 @@ function ODController() {
               onClick={() => handleSubTabChange(year)}
             >
               {year} year
-
             </button>
           ))}
 
       </div>
-      <div className='flex'>{sections.map(section => (
+      <div className='flex'>{sections[subTab-1].map(section => (
         <div>
           <button
             className={`py-2 px-4 text-lg font-medium ${subSections === section ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-600'}`}
             onClick={(t) => handleSubSectionChange(section
-
-
-
             )}
           >
             {section}

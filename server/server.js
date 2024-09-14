@@ -40,15 +40,10 @@ app.post('/changepwd', async (req,res)=>{
     try{
         const signUp = await pg.query(`UPDATE student_login SET hashed_pwd=($1) WHERE email=($2);`,
             [hashedPassword,email])
-        
-            
-
-            res.json({email})
-        
+            res.json({email})    
     }
     catch(err){
         console.log(err)
-
         if (err) {
             res.json({detail:err.detail})
         }
@@ -65,15 +60,11 @@ app.post('/staffsignup', async (req,res)=>{
     try{
         const signUp = await pg.query(`INSERT INTO staff_login (email, hashed_password) VALUES($1, $2);`,
             [email, hashedPassword])
-        
             const token =jwt.sign({email}, 'secret', {expiresIn: '1hr'})
-
-            res.json({email, token})
-        
+            res.json({email, token,"role": "admin"}) 
     }
     catch(err){
         console.log(err)
-
         if (err) {
             res.json({detail:err.detail})
         }
@@ -113,7 +104,7 @@ app.post('/studentsignup', async (req,res)=>{
         
             const token =jwt.sign({email}, 'secret', {expiresIn: '1hr'})
 
-            res.json({email, token})
+            res.json({email, token,"role": "student"})
         
     }
     catch(err){
