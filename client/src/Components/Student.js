@@ -174,6 +174,7 @@ const Student = () => {
                                     >
                                         <option value="on-duty">On-Duty</option>
                                         <option value="permission">Permission</option>
+                                        <option value="leave">Leave</option>
                                     </select>
                                 </div>
                                 <div className="flex flex-col">

@@ -9,10 +9,11 @@ function ODController() {
   const [expandedCardId, setExpandedCardId] = useState(null);
   const [subTab, setSubTab] = useState(1);
   const [subSections, setSubSections] = useState('A');
-
+  
   // Fetch data based on the active tab
   const fetchRequests = useCallback(async () => {
     try {
+      // setCircleLoader(true);
       console.log(subTab, subSections); // Check if these are being passed correctly
       const response = await axios.get(`/api/ODController/fetchOD/${activeTab}`, {
         params: {
@@ -188,7 +189,7 @@ function ODController() {
               <p>No live OD requests available at the moment.</p>
             ) : (
               <>
-                <div className='text-3xl font-medium text-black'>LIVE OD Count : {acceptedOD.length}</div>
+                <div className='text-3xl font-medium text-black'>{subTab}{subTab === 1 && "st"}{subTab===2&&"nd"}{subTab===3&&"rd" }{subTab >= 4 && "th"} Year Od Count : {acceptedOD.length}</div>
                 <div className="w-full max-w-4xl overflow-x-hidden">
                   {acceptedOD.map(request => (
                     <Card
