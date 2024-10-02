@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import axios from "axios";
 
 function AdminControl() {
-    const [file, setFile] = useState(null);
+    const [studentFile, setStudentFile] = useState(null);
+    const [attendanceFile, setAttendanceFile] = useState(null);
     const [studentsError, setStudentsError] = useState("");
     const [studentsSuccess, setStudentsSuccess] = useState("");
     const [attendanceError, setAttendanceError] = useState("");
     const [attendanceSuccess, setAttendanceSuccess] = useState("");
 
-    const handleFileChange = (event) => {
+    const handleFileChange = (event, isAttendanceUpload) => {
         const selectedFile = event.target.files[0];
 
         if (
@@ -17,19 +18,30 @@ function AdminControl() {
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" &&
             selectedFile.type !== "application/vnd.ms-excel"
         ) {
-            setStudentsError("Please upload a valid Excel file.");
-            setFile(null);
+            if (isAttendanceUpload) {
+                setAttendanceError("Please upload a valid Excel file.");
+                setAttendanceFile(null);
+            } else {
+                setStudentsError("Please upload a valid Excel file.");
+                setStudentFile(null);
+            }
         } else {
-            setFile(selectedFile);
-            setStudentsError(""); // Clear error message
-            setAttendanceError(""); // Clear error message for attendance form as well
+            if (isAttendanceUpload) {
+                setAttendanceFile(selectedFile);
+                setAttendanceError(""); // Clear error message
+            } else {
+                setStudentFile(selectedFile);
+                setStudentsError(""); // Clear error message
+            }
         }
     };
 
     const handleSubmitUpload = async (atd, event, isAttendanceUpload) => {
         event.preventDefault();
 
-        if (!file) {
+        const fileToUpload = isAttendanceUpload ? attendanceFile : studentFile;
+
+        if (!fileToUpload) {
             const errorMessage = "Please choose a file to upload.";
             if (isAttendanceUpload) {
                 setAttendanceError(errorMessage);
@@ -40,7 +52,7 @@ function AdminControl() {
         }
 
         const formData = new FormData();
-        formData.append("file", file);
+        formData.append("file", fileToUpload);
 
         try {
             const response = await axios.post(`/api/upload/upload${atd}`, formData, {
@@ -51,9 +63,13 @@ function AdminControl() {
             if (isAttendanceUpload) {
                 setAttendanceSuccess("Attendance file uploaded successfully");
                 setAttendanceError(""); // Clear previous error
+                setAttendanceFile(null); // Clear attendance file
+                document.getElementById('attendance_file_upload').value = ""; // Clear the input field
             } else {
                 setStudentsSuccess("Students file uploaded successfully");
                 setStudentsError(""); // Clear previous error
+                setStudentFile(null); // Clear student file
+                document.getElementById('students_file_upload').value = ""; // Clear the input field
             }
             console.log("File uploaded successfully:", response.data);
         } catch (error) {
@@ -84,7 +100,7 @@ function AdminControl() {
                     aria-describedby="students_file_upload_help"
                     id="students_file_upload"
                     type="file"
-                    onChange={handleFileChange}
+                    onChange={(event) => handleFileChange(event, false)}
                     accept=".xlsx,.xls"
                 />
                 {studentsError && <p className="text-red-500 mt-2">{studentsError}</p>}
@@ -105,7 +121,7 @@ function AdminControl() {
                     aria-describedby="attendance_file_upload_help"
                     id="attendance_file_upload"
                     type="file"
-                    onChange={handleFileChange}
+                    onChange={(event) => handleFileChange(event, true)}
                     accept=".xlsx,.xls"
                 />
                 {attendanceError && <p className="text-red-500 mt-2">{attendanceError}</p>}
