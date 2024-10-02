@@ -1,174 +1,141 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import Card from './Card';
 
 function ODController() {
-  const [requests, setRequests] = useState([]);
-  const [acceptedOD, setAcceptedOD] = useState([]);
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('odRequest');
   const [expandedCardId, setExpandedCardId] = useState(null);
   const [subTab, setSubTab] = useState(1);
   const [subSections, setSubSections] = useState('A');
-  
-  // Fetch data based on the active tab
-  const fetchRequests = useCallback(async () => {
-    try {
-      // setCircleLoader(true);
-      console.log(subTab, subSections); // Check if these are being passed correctly
-      const response = await axios.get(`/api/ODController/fetchOD/${activeTab}`, {
-        params: {
-          year: subTab,
-          section: subSections,
-        },
-      });
-      console.log('Response Data:', response.data); // Check what data is being returned
-  
-      if (activeTab === 'odRequest') {
-        setRequests(response.data); // Ensure the data is being set properly
-      } else if (activeTab === 'liveOd') {
-        setAcceptedOD(response.data);
-      }
-    } catch (error) {
-      console.error('Error fetching requests:', error);
-    }
-  }, [activeTab, subTab, subSections]);
 
-  // Fetch data initially and when the active tab changes
-  useEffect(() => {
-    fetchRequests();
-  }, [fetchRequests]);
+  // Fetch requests based on active tab
+  const fetchRequests = async () => {
+    const response = await axios.get(`/api/ODController/fetchOD/${activeTab}`, {
+      params: { year: subTab, section: subSections },
+    });
+    return response.data;
+  };
 
-  // Toggle the expanded state of a specific card
-  const handleToggleExpand = useCallback((id) => {
-    setExpandedCardId(prevId => (prevId === id ? null : id));
-  }, []);
-  const handleSubTabChange = useCallback((subTab) => {
-    setSubTab(subTab);
+  // Use query for fetching requests
+  const { data: requests = [] } = useQuery({
+    queryKey: ['odRequests', activeTab, subTab, subSections],
+    queryFn: fetchRequests,
+  });
 
-  }, []);
-  const handleTabChange = useCallback((tab) => {
-    setActiveTab(tab);
-  }, []);
-  const handleSubSectionChange = useCallback((section) => {
-    
-    setSubSections(section);
-  }, []);
-
-
-
-  const handleAccept = useCallback(async (id, RegNo) => {
-    const acceptedRequest = requests.find(request => request.id === id);
-    setRequests(prevRequests => prevRequests.filter(request => request.id !== id));
-    setAcceptedOD(prevAcceptedOD => [...prevAcceptedOD, acceptedRequest]);
-    const isRequestTab = activeTab === 'odRequest';
-    try {
+  // Use mutation for accepting requests
+  const mutation = useMutation({
+    mutationFn: async ({ id, RegNo }) => {
       await axios.patch(`/api/ODController/updateStatus`, {
         id,
         RegNo,
-        status: 1,
-        isRequestTab
-        // Update status to 1 for accepted requests
+        status: 1, // Update status to accepted
       });
-
-      // Re-fetch data to ensure UI is updated
-      fetchRequests();
-    } catch (error) {
+    },
+    onSuccess: () => {
+      // Invalidate queries to ensure fresh data
+      queryClient.invalidateQueries(['odRequests']);
+    },
+    onError: (error) => {
       console.error('Error updating status:', error);
-    }
-  }, [requests, fetchRequests]);
+    },
+  });
 
-  const handleDecline = useCallback(async (id, RegNo) => {
-    const requestToDecline = requests.find(request => request.id === id);
-    const isRequestTab = activeTab === 'odRequest';
+  const handleAccept = (id, RegNo) => {
+    mutation.mutate({ id, RegNo });
+  };
 
-    // Remove the declined request from the respective state
-    if (isRequestTab) {
-      setRequests(prevRequests => prevRequests.filter(request => request.id !== id));
-    } else {
-      setAcceptedOD(prevAcceptedOD => prevAcceptedOD.filter(request => request.id !== id));
-    }
-    try {
-      await axios.patch(`/api/ODController/updateStatus`, {
-        id,
-        RegNo,
-        status: -1,// Update status to -1 for declined requests
-        isRequestTab
-      });
+  const handleDecline = async (id, RegNo) => {
+    await axios.patch(`/api/ODController/updateStatus`, {
+      id,
+      RegNo,
+      status: -1, // Update status to declined
+    });
+    queryClient.invalidateQueries(['odRequests']);
+  };
 
-      // Re-fetch data to ensure UI is updated
-      fetchRequests();
-    } catch (error) {
-      console.error('Error declining request:', error);
+  const handleToggleExpand = (id) => {
+    setExpandedCardId((prevId) => (prevId === id ? null : id));
+  };
 
-      // Rollback if there's an error
-      if (isRequestTab) {
-        setRequests(prevRequests => [...prevRequests, requestToDecline]);
-      } else {
-        setAcceptedOD(prevAcceptedOD => [...prevAcceptedOD, requestToDecline]);
-      }
-    }
-  }, [requests, acceptedOD, activeTab, fetchRequests]);
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+  };
+
+  const handleSubTabChange = (year) => {
+    setSubTab(year);
+  };
+
+  const handleSubSectionChange = (section) => {
+    setSubSections(section);
+  };
+
   const Years = [1, 2, 3, 4];
-  const year1 = ["A","B","C"]
-  const year2 = ["A","B"]
-  const year3 = ["A","B"]
-  const year4 = ["A"]
+  const yearSections = {
+    1: ['A', 'B', 'C'],
+    2: ['A', 'B'],
+    3: ['A', 'B'],
+    4: ['A'],
+  };
 
-  const sections = [year1,year2,year3,year4];
   return (
     <div className="p-6 bg-gray-50 min-h-screen flex flex-col items-center overflow-x-hidden">
-      <div className="text-center">
-        <h2 className="text-2xl font-semibold text-purple-700 mt-2">OD REQUEST</h2>
-      </div>
-
-
+      <h2 className="text-2xl font-semibold text-purple-700 mt-2">OD REQUEST</h2>
       <div className="mt-4 flex border-b border-gray-300">
         <button
-          className={`py-2 px-4 text-lg font-medium ${activeTab === 'odRequest' ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-600'}`}
+          className={`py-2 px-4 text-lg font-medium ${
+            activeTab === 'odRequest' ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-600'
+          }`}
           onClick={() => handleTabChange('odRequest')}
         >
           OD REQUEST
         </button>
         <button
-          className={`py-2 px-4 text-lg font-medium ${activeTab === 'liveOd' ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-600'}`}
+          className={`py-2 px-4 text-lg font-medium ${
+            activeTab === 'liveOd' ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-600'
+          }`}
           onClick={() => handleTabChange('liveOd')}
         >
           LIVE OD / PERMISSION
         </button>
       </div>
-      <div className='flex '>
-
-        {/* New Tabs */
-          Years.map(year => (
-            <button
-              className={`py-2 px-4 text-lg font-medium ${subTab === year ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-600'}`}
-              onClick={() => handleSubTabChange(year)}
-            >
-              {year} year
-            </button>
-          ))}
-
-      </div>
-      <div className='flex'>{sections[subTab-1].map(section => (
-        <div>
+      
+      <div className="flex">
+        
+        {Years.map((year) => (
           <button
-            className={`py-2 px-4 text-lg font-medium ${subSections === section ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-600'}`}
-            onClick={(t) => handleSubSectionChange(section
-            )}
+            key={year}
+            className={`py-2 px-4 text-lg font-medium ${
+              subTab === year ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-600'
+            }`}
+            onClick={() => handleSubTabChange(year)}
+          >
+            {year} year
+          </button>
+        ))}
+      </div>
+      <div className="flex">
+        {yearSections[subTab].map((section) => (
+          <button
+            key={section}
+            className={`py-2 px-4 text-lg font-medium ${
+              subSections === section ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-600'
+            }`}
+            onClick={() => handleSubSectionChange(section)}
           >
             {section}
           </button>
-        </div>
-      ))}
+        ))}
       </div>
+      {activeTab==='liveOd'&& <div className='block mt-5 font-semibold text-xl'><h2>Live OD | Permission Count : {requests.length}</h2> </div> }
       <div className="mt-4 flex flex-col items-center p-4">
-
         {activeTab === 'odRequest' && (
           <div className="w-full max-w-4xl overflow-x-hidden m-4">
             {requests.length === 0 ? (
               <p>No OD requests available at the moment.</p>
             ) : (
-              requests.map(request => (
+              requests.map((request) => (
                 <Card
                   live={false}
                   key={request.id}
@@ -182,28 +149,30 @@ function ODController() {
             )}
           </div>
         )}
-
         {activeTab === 'liveOd' && (
           <div className="flex flex-col items-center mt-4 text-gray-600">
-            {acceptedOD.length === 0 ? (
+            
+            {requests.length === 0 ? (
+              
               <p>No live OD requests available at the moment.</p>
+              
+              
             ) : (
-              <>
-                <div className='text-3xl font-medium text-black'>{subTab}{subTab === 1 && "st"}{subTab===2&&"nd"}{subTab===3&&"rd" }{subTab >= 4 && "th"} Year Od Count : {acceptedOD.length}</div>
-                <div className="w-full max-w-4xl overflow-x-hidden">
-                  {acceptedOD.map(request => (
-                    <Card
-                      live={true}
-                      key={request.id}
-                      data={request}
-                      isExpanded={expandedCardId === request.id}
-                      onToggleExpand={() => handleToggleExpand(request.id)}
-                      onAccept={() => { }}
-                      onDecline={() => handleDecline(request.id, request.RegNo)}
-                    />
-                  ))}
-                </div>
-              </>
+              
+             
+              <div className="w-full max-w-4xl overflow-x-hidden">
+                {requests.map((request) => (
+                  <Card
+                    live={true}
+                    key={request.id}
+                    data={request}
+                    isExpanded={expandedCardId === request.id}
+                    onToggleExpand={() => handleToggleExpand(request.id)}
+                    onDecline={() => handleDecline(request.id, request.RegNo)}
+                  />
+                ))}
+              </div>
+              
             )}
           </div>
         )}
@@ -213,4 +182,3 @@ function ODController() {
 }
 
 export default ODController;
-

@@ -60,3 +60,28 @@ CREATE TABLE IF NOT EXISTS public.student_login
     email character varying(255) COLLATE pg_catalog."default",
     hashed_pwd character varying(255) COLLATE pg_catalog."default"
 )
+
+--------------------------------ATTENDENCE------------------------------------- 10/2/2024
+
+CREATE TABLE IF NOT EXISTS public.student_attendance_summary
+(
+    student_id bigint NOT NULL,
+    total_classes integer NOT NULL,
+    absent_count integer NOT NULL,
+    CONSTRAINT student_attendance_summary_pkey PRIMARY KEY (student_id)
+)
+
+
+
+ALTER TABLE public."ODsummary"
+ALTER COLUMN "RegNo" TYPE BIGINT USING "RegNo"::BIGINT;
+
+
+ALTER TABLE public."OdReqTable"
+ALTER COLUMN "RegNo" TYPE BIGINT USING "RegNo"::BIGINT;
+
+ALTER TABLE public.student
+ALTER COLUMN rollno TYPE BIGINT USING rollno::BIGINT;
+
+ALTER TABLE public.student_attendance_summary
+ALTER COLUMN student_id TYPE BIGINT USING student_id::BIGINT;

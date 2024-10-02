@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 import ODController from './Routes/ODcontrollerRouter.js';
 import Student from './Routes/StudentRouter.js';
 import pg from "./DB/DPPG.js";
+import AdminControlRouter from './Routes/AdminControlRouter.js';
 const app = express();
 const port = 3001;
 
@@ -16,6 +17,7 @@ app.use(cors());
 // Routers
 app.use('/api/ODController/',ODController);
 app.use('/api/Student/',Student);
+app.use('/api/upload/',AdminControlRouter);
 //database
 // const pg = new Pg.Client({
 //     user: 'postgres',

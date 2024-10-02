@@ -185,9 +185,11 @@ const Student = () => {
                                         name="startDate"
                                         id="startDate"
                                         value={startDate}
+                                        min={formattedDate}
                                         onChange={(e) => setStartDate(e.target.value)}
                                     />
                                 </div>
+                                {console.log(startDate , formattedDate )}
                                 <div className="flex flex-col">
                                     <label htmlFor="endDate">End date</label>
                                     <input
@@ -197,6 +199,7 @@ const Student = () => {
                                         id="endDate"
                                         value={endDate}
                                         min={startDate}
+                                        
                                         onChange={(e) => setEndDate(e.target.value)}
                                     />
                                 </div>

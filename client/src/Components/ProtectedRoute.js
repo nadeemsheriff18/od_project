@@ -9,8 +9,10 @@ const ProtectedRoute = ({ component: Component, role, ...rest }) => {
   return (
     <Route
       {...rest}
+     
       render={(props) =>
         cookies.Role === role ? (
+          
           <Component {...props} />
         ) : (
           <Redirect to="/access-denied" />
