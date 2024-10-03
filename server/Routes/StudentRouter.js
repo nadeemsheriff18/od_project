@@ -21,4 +21,27 @@ router.post('/submitOD', async (req, res) => {
     }
 });
 
+router.get('/:email', async (req, res) => {
+    const email = req.params.email;
+    console.log(`Fetching data for email: ${email}`);
+
+    try {
+        const query = 'SELECT * FROM student WHERE email = $1';
+        const values = [email];
+        
+        const result = await pool.query(query, values);
+        
+        if (result.rows.length > 0) {
+            res.status(200).json(result.rows[0]);
+        } else {
+            console.log('Student not found');
+            res.status(404).json({ message: 'Student not found' });
+        }
+    } catch (error) {
+        console.error('Error fetching student data:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+
 export default router;
