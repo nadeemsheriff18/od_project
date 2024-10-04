@@ -5,6 +5,8 @@ import Card from './Card';
 
 function ODController() {
   const queryClient = useQueryClient();
+  
+
   const [activeTab, setActiveTab] = useState('odRequest');
   const [expandedCardId, setExpandedCardId] = useState(null);
   const [subTab, setSubTab] = useState(1);
@@ -47,13 +49,17 @@ function ODController() {
   };
 
   const handleDecline = async (id, RegNo) => {
-    await axios.patch(`/api/ODController/updateStatus`, {
-      id,
-      RegNo,
-      status: -1, // Update status to declined
-    });
-    queryClient.invalidateQueries(['odRequests']);
-  };
+    try {
+        await axios.patch(`/api/ODController/updateStatus`, {
+            id,
+            RegNo,
+            status: -1  // Decline status
+        });
+        // No need to modify state, as setRequests is not needed
+    } catch (error) {
+        console.error('Error declining request:', error);
+    }
+};
 
   const handleToggleExpand = (id) => {
     setExpandedCardId((prevId) => (prevId === id ? null : id));
