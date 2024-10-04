@@ -141,3 +141,48 @@ app.post('/studentlogin',async (req,res)=>{
  app.listen(port,()=>{
     console.log(`server is running on port ${port}`);
  });
+
+ //AHOD login
+ app.post('/ahodsignup', async (req,res)=>{
+    const {email, password}= req.body
+    const salt=bcrypt.genSaltSync(10)
+    const hashedPassword=bcrypt.hashSync(password,salt)
+
+    try{
+        const signUp = await pg.query(`INSERT INTO ahod_login (email, hashed_pwd) VALUES($1, $2);`,
+            [email, hashedPassword])
+        
+            const token =jwt.sign({email}, 'secret', {expiresIn: '1hr'})
+
+            res.json({email, token,"role": "ahod"})
+        
+    }
+    catch(err){
+        console.log(err)
+
+        if (err) {
+            res.json({detail:err.detail})
+        }
+    }
+});
+
+app.post('/ahodlogin',async (req,res)=>{
+    const {email,password}= req.body
+    try{
+        const ahod=await pg.query('SELECT * FROM ahod_login Where email = $1', [email])
+
+        if(!ahod.rows.length) return res.json({detail: 'User does not exist! '})
+
+            const success =await bcrypt.compare(password,ahod.rows[0].hashed_pwd)
+            const token =jwt.sign({email}, 'secret', {expiresIn: '1hr'})
+            if(success){
+                res.json({'email': ahod.rows[0].email,token,"role": "ahod"})
+            }
+            else{
+                res.json({detail: 'Invalid password! '})
+            }
+    }
+    catch(err){
+        console.log(err)
+    }
+})

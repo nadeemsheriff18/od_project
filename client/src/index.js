@@ -11,6 +11,9 @@ import Student from './Components/Student';
 import LOGIN from './Components/LOGIN';
 import ODController from './Components/ODController';
 import Staff_login from './Components/Staff_login';
+import AHOD_login from './Components/AHOD_login';
+//import AhodAccess from './Components/AhodAccess';
+import AHODDashboard from './Components/AHODDashboard';
 import ForgotPassword from './Components/ForgotPassword';
 import ProtectedRoute from './Components/ProtectedRoute';
 import AdminControl from './Components/AdminControl';
@@ -31,6 +34,10 @@ root.render(
       </Route>
       <Route path="/admin"><ODController/>
       </Route>
+    
+      <Route path="/ahod"><AHODDashboard/>
+      </Route>
+      
       <Route path="/adminControl"><AdminControl/>
       </Route>
 
@@ -39,6 +46,9 @@ root.render(
       </Route>
       <Route path="/stafflogin">
         <Staff_login />
+      </Route>
+      <Route path="/ahodlogin">
+        <AHOD_login />
       </Route>
       <Route path="/forgotpwd">
         <ForgotPassword />

@@ -3,8 +3,8 @@ import { useState, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { useCookies } from "react-cookie";
 
-function Od_stu_LoginPage() {
-
+function Od_ahod_LoginPage() {
+  
   const [cookies, setCookie, removeCookie] = useCookies(["Role"]);
   const [isLogin, setIsLogin] = useState(true);
   const [error, setError] = useState(null);
@@ -41,13 +41,17 @@ function Od_stu_LoginPage() {
         setCookie("Email", data.email);
         setCookie("AuthToken", data.token);
         setCookie("Role", data.role);
-
+        
 
         if (data.role === "admin") {
           history.push("/admin");
         } else if (data.role === "student") {
           history.push("/student");
-        } else {
+        } 
+        else if (data.role === "ahod") {
+            history.push("/ahod");
+          } 
+        else {
           setError("Invalid role detected.");
           removeCookie("Email");
           removeCookie("AuthToken");
@@ -60,7 +64,7 @@ function Od_stu_LoginPage() {
     }
   };
 
-
+  
 
   return (
     <div className="min-h-screen bg-violet-100 flex flex-col items-center justify-center">
@@ -103,7 +107,7 @@ function Od_stu_LoginPage() {
             type="submit"
             className="placeholder:text-center text-lg border-2 rounded-xl p-1 bg-purple-300 cursor-pointer hover:bg-purple-700"
             onClick={(e) =>
-              handleSubmit(e, isLogin ? "stafflogin" : "staffsignup")
+              handleSubmit(e, isLogin ? "ahodlogin" : "ahodsignup")
             }
           />
           {error && <p>{error}</p>}
@@ -135,4 +139,4 @@ function Od_stu_LoginPage() {
   );
 }
 
-export default Od_stu_LoginPage;
+export default Od_ahod_LoginPage;
