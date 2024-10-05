@@ -73,10 +73,10 @@ function AdminControl() {
             }
             console.log("File uploaded successfully:", response.data);
         } catch (error) {
-            const errorMessage = error.response?.data?.nooverride 
-                ? "One or more similar items found." 
+            const errorMessage = error.response?.data?.nooverride
+                ? "One or more similar items found."
                 : "Failed to upload file.";
-            
+
             if (isAttendanceUpload) {
                 setAttendanceError(errorMessage);
                 setAttendanceSuccess(""); // Clear previous success message
