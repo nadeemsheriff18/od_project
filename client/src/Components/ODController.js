@@ -5,7 +5,7 @@ import Card from './Card';
 
 function ODController() {
   const queryClient = useQueryClient();
-  
+
 
   const [activeTab, setActiveTab] = useState('odRequest');
   const [expandedCardId, setExpandedCardId] = useState(null);
@@ -43,23 +43,30 @@ function ODController() {
       console.error('Error updating status:', error);
     },
   });
+  const mutation1 = useMutation({
+    mutationFn: async ({ id, RegNo }) => {
+      await axios.patch(`/api/ODController/updateStatus`, {
+        id,
+        RegNo,
+        status: -1, // Update status to declined
+      });
+    },
+    onSuccess: () => {
+      // Invalidate queries to ensure fresh data
+      queryClient.invalidateQueries(['odRequests']);
+    },
+    onError: (error) => {
+      console.error('Error updating status:', error);
+    },
+  });
 
   const handleAccept = (id, RegNo) => {
     mutation.mutate({ id, RegNo });
   };
 
   const handleDecline = async (id, RegNo) => {
-    try {
-        await axios.patch(`/api/ODController/updateStatus`, {
-            id,
-            RegNo,
-            status: -1  // Decline status
-        });
-        // No need to modify state, as setRequests is not needed
-    } catch (error) {
-        console.error('Error declining request:', error);
-    }
-};
+    mutation1.mutate({ id, RegNo });
+  };
 
   const handleToggleExpand = (id) => {
     setExpandedCardId((prevId) => (prevId === id ? null : id));
@@ -90,31 +97,28 @@ function ODController() {
       <h2 className="text-2xl font-semibold text-purple-700 mt-2">OD REQUEST</h2>
       <div className="mt-4 flex border-b border-gray-300">
         <button
-          className={`py-2 px-4 text-lg font-medium ${
-            activeTab === 'odRequest' ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-600'
-          }`}
+          className={`py-2 px-4 text-lg font-medium ${activeTab === 'odRequest' ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-600'
+            }`}
           onClick={() => handleTabChange('odRequest')}
         >
           OD REQUEST
         </button>
         <button
-          className={`py-2 px-4 text-lg font-medium ${
-            activeTab === 'liveOd' ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-600'
-          }`}
+          className={`py-2 px-4 text-lg font-medium ${activeTab === 'liveOd' ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-600'
+            }`}
           onClick={() => handleTabChange('liveOd')}
         >
           LIVE OD / PERMISSION
         </button>
       </div>
-      
+
       <div className="flex">
-        
+
         {Years.map((year) => (
           <button
             key={year}
-            className={`py-2 px-4 text-lg font-medium ${
-              subTab === year ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-600'
-            }`}
+            className={`py-2 px-4 text-lg font-medium ${subTab === year ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-600'
+              }`}
             onClick={() => handleSubTabChange(year)}
           >
             {year} year
@@ -125,16 +129,15 @@ function ODController() {
         {yearSections[subTab].map((section) => (
           <button
             key={section}
-            className={`py-2 px-4 text-lg font-medium ${
-              subSections === section ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-600'
-            }`}
+            className={`py-2 px-4 text-lg font-medium ${subSections === section ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-600'
+              }`}
             onClick={() => handleSubSectionChange(section)}
           >
             {section}
           </button>
         ))}
       </div>
-      {activeTab==='liveOd'&& <div className='block mt-5 font-semibold text-xl'><h2>Live OD | Permission Count : {requests.length}</h2> </div> }
+      {activeTab === 'liveOd' && <div className='block mt-5 font-semibold text-xl'><h2>Live OD | Permission Count : {requests.length}</h2> </div>}
       <div className="mt-4 flex flex-col items-center p-4">
         {activeTab === 'odRequest' && (
           <div className="w-full max-w-4xl overflow-x-hidden m-4">
@@ -157,15 +160,15 @@ function ODController() {
         )}
         {activeTab === 'liveOd' && (
           <div className="flex flex-col items-center mt-4 text-gray-600">
-            
+
             {requests.length === 0 ? (
-              
+
               <p>No live OD requests available at the moment.</p>
-              
-              
+
+
             ) : (
-              
-             
+
+
               <div className="w-full max-w-4xl overflow-x-hidden">
                 {requests.map((request) => (
                   <Card
@@ -178,7 +181,7 @@ function ODController() {
                   />
                 ))}
               </div>
-              
+
             )}
           </div>
         )}

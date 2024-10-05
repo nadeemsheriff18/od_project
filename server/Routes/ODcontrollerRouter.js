@@ -42,7 +42,7 @@ router.get('/fetchOD/:activeTab', async (req, res) => {
       AND a."AHOD_accept" = 1;  -- Only show requests accepted by AHOD
     `;
     const result = await pool.query(query, [status, year, section]);
-    console.log('Result:', result.rows); // Log the result
+     // Log the result
     res.status(200).json(result.rows);
   } catch (err) {
     console.error('Error fetching data:', err);
@@ -52,6 +52,7 @@ router.get('/fetchOD/:activeTab', async (req, res) => {
 
 
 // Update Astatus and OD/Permissions based on RegNo
+// Update Astatus and OD/Permissions based on RegNo (for Accept/Decline by HOD)
 router.patch('/updateStatus', async (req, res) => {
   const { id, RegNo, status, isRequestTab } = req.body;
 
@@ -66,15 +67,15 @@ router.patch('/updateStatus', async (req, res) => {
       WHERE "RegNo" = $1 AND id = $2;
     `;
     const fetchTypeResult = await client.query(fetchTypeQuery, [RegNo, id]);
-      
+
     if (fetchTypeResult.rowCount === 0) {
       await client.query('ROLLBACK');
       return res.status(404).json({ message: 'Record not found' });
     }
 
     const { Type } = fetchTypeResult.rows[0];
-    
-    // Update Astatus
+
+    // Update Astatus (Accept = 1, Decline = -1)
     const updateStatusQuery = `
       UPDATE public."OdReqTable" 
       SET "Astatus" = $1 
@@ -86,47 +87,32 @@ router.patch('/updateStatus', async (req, res) => {
 
     if (statusResult.rowCount === 0) {
       await client.query('ROLLBACK');
-      return res.status(404).json({ message: 'Record not found' });
+      return res.status(404).json({ message: 'Request not found' });
     }
 
-    // Determine how to update OD or Permission counts
+    // If declined (status === -1), no OD/Permission count updates
+    if (status === -1) {
+      // Just update the Astatus to -1, no further changes needed for counts
+      await client.query('COMMIT');
+      return res.status(200).json({ message: 'Request declined successfully' });
+    }
+
+    // Continue with OD or Permission count update only if accepted (status === 1)
     let updateCountQuery = '';
-
-    if (Type === 'permission') {
-      if (isRequestTab && status === 1) {
-        // Accepted: Increase Permission count
-        updateCountQuery = `
-          UPDATE public."ODsummary" 
-          SET "Permission" = "Permission" + 1 
-          WHERE "RegNo" = $1;
-        `;
-      } else if (!isRequestTab && status === -1) {
-        // Closed: Decrease Permission count
-        updateCountQuery = `
-          UPDATE public."ODsummary" 
-          SET "Permission" = "Permission" - 1 
-          WHERE "RegNo" = $1;
-        `;
-      }
-    } else if (Type === 'on-duty') {
-      if (isRequestTab && status === 1) {
-        // Accepted: Increase OD count
-        updateCountQuery = `
-          UPDATE public."ODsummary" 
-          SET "OD" = "OD" + 1 
-          WHERE "RegNo" = $1;
-        `;
-      } else if (!isRequestTab && status === -1) {
-        // Closed: Decrease OD count
-        updateCountQuery = `
-          UPDATE public."ODsummary" 
-          SET "OD" = "OD" - 1 
-          WHERE "RegNo" = $1;
-        `;
-      }
+    if (Type === 'permission' && status === 1) {
+      updateCountQuery = `
+        UPDATE public."ODsummary" 
+        SET "Permission" = "Permission" + 1 
+        WHERE "RegNo" = $1;
+      `;
+    } else if (Type === 'on-duty' && status === 1) {
+      updateCountQuery = `
+        UPDATE public."ODsummary" 
+        SET "OD" = "OD" + 1 
+        WHERE "RegNo" = $1;
+      `;
     }
 
-    // Execute count update if applicable
     if (updateCountQuery) {
       const countResult = await client.query(updateCountQuery, [RegNo]);
       if (countResult.rowCount === 0) {
@@ -137,6 +123,7 @@ router.patch('/updateStatus', async (req, res) => {
 
     await client.query('COMMIT');
     res.status(200).json({ message: 'Status and count updated successfully' });
+
   } catch (error) {
     await client.query('ROLLBACK');
     console.error('Error updating status:', error);
@@ -151,12 +138,41 @@ router.patch('/updateStatus', async (req, res) => {
 
 // Fetch OD requests pending AHOD approval
 router.get('/ahod/fetchPending', async (req, res) => {
+  const { year, section } = req.query; // Retrieve year and section from the query parameters
+
   try {
     const query = `
-      SELECT * FROM public."OdReqTable" 
-      WHERE "AHOD_accept" = -1 AND "Astatus" = 0;
+      SELECT 
+        a."RegNo", 
+        a."Type", 
+        a."Reason", 
+        a."EndDate", 
+        a."Subject", 
+        a."StartDate", 
+        a."ReqDate", 
+        a.id, 
+        a."Astatus",
+        b.email,
+        b.stud_name, 
+        b.department, 
+        b.cgpa,
+        b.year, 
+        b.sem, 
+        b.sec, 
+        COALESCE(c."OD", 0) AS "OD",
+        COALESCE(c."Permission", 0) AS "Permission"
+      FROM public."OdReqTable" AS a
+      JOIN public."student" AS b 
+        ON a."RegNo" = b."rollno"
+      LEFT JOIN public."ODsummary" AS c 
+        ON a."RegNo" = c."RegNo"
+      WHERE a."AHOD_accept" = -1 
+        AND a."Astatus" = 0
+        AND b.year = $1 
+        AND b.sec = $2;  -- Filter by year and section
     `;
-    const result = await pool.query(query);
+    
+    const result = await pool.query(query, [year, section]);
     res.status(200).json(result.rows);
   } catch (err) {
     console.error('Error fetching data:', err);
