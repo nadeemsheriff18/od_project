@@ -12,6 +12,7 @@ const Card = ({ data, live, onToggleExpand, isExpanded, onAccept, onDecline }) =
   const attendancePercentage = useMemo(() => {
     return (((data.total_classes-data.absent_count) / data.total_classes) * 100).toFixed(1);
   }, [data.absent_count, data.total_classes]);
+  console.log(attendancePercentage);
 
   // Handler to stop click event from propagating
   const handleButtonClick = (event) => {

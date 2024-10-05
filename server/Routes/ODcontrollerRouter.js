@@ -14,32 +14,38 @@ router.get('/fetchOD/:activeTab', async (req, res) => {
   try {
     const query = `
       SELECT 
-        a."RegNo", 
-        a."Type", 
-        a."Reason", 
-        a."EndDate", 
-        a."Subject", 
-        a."StartDate",
-        a."ReqDate", 
-        a.id, 
-        a."Astatus",
-        b.email,
-        b.stud_name, 
-        b.department, 
-        b.cgpa,
-        b.year, 
-        b.sem, 
-        b.sec, 
-        b."Attendence", 
-        COALESCE(c."OD", 0) AS "OD",
-        COALESCE(c."Permission", 0) AS "Permission"
-      FROM public."OdReqTable" AS a
-      JOIN public."student" AS b 
-        ON a."RegNo" = b."rollno"
-      LEFT JOIN public."ODsummary" AS c 
-        ON a."RegNo" = c."RegNo"
-      WHERE a."Astatus" = $1 AND b.year = $2 AND b.sec = $3
-      AND a."AHOD_accept" = 1;  -- Only show requests accepted by AHOD
+    a."RegNo", 
+    a."Type", 
+    a."Reason", 
+    a."EndDate", 
+    a."Subject", 
+    a."StartDate",
+    a."ReqDate", 
+    a.id, 
+    a."Astatus",
+    b.email,
+    b.stud_name, 
+    b.department, 
+    b.cgpa,
+    b.year, 
+    b.sem, 
+    b.sec,  
+    COALESCE(c."OD", 0) AS "OD",
+    COALESCE(c."Permission", 0) AS "Permission",
+    COALESCE(sas.total_classes, 0) AS total_classes,
+    COALESCE(sas.absent_count, 0) AS absent_count
+FROM public."OdReqTable" AS a
+JOIN public."student" AS b 
+    ON a."RegNo" = b."rollno"
+LEFT JOIN public."ODsummary" AS c 
+    ON a."RegNo" = c."RegNo"
+LEFT JOIN public.student_attendance_summary AS sas
+    ON a."RegNo" = sas.student_id
+WHERE a."Astatus" = $1 
+  AND b.year = $2 
+  AND b.sec = $3
+  AND a."AHOD_accept" = 1;  -- Only show requests accepted by AHOD
+  -- Only show requests accepted by AHOD
     `;
     const result = await pool.query(query, [status, year, section]);
     console.log('Result:', result.rows); // Log the result
@@ -154,31 +160,36 @@ router.get('/ahod/fetchPending', async (req, res) => {
   try {
     const query = `
       SELECT 
-        a."RegNo", 
-        a."Type", 
-        a."Reason", 
-        a."EndDate", 
-        a."Subject", 
-        a."StartDate",
-        a."ReqDate", 
-        a.id, 
-        a."Astatus",
-        b.email,
-        b.stud_name, 
-        b.department, 
-        b.cgpa,
-        b.year, 
-        b.sem, 
-        b.sec, 
-        b."Attendence", 
-        COALESCE(c."OD", 0) AS "OD",
-        COALESCE(c."Permission", 0) AS "Permission"
-      FROM public."OdReqTable" AS a
-      JOIN public."student" AS b 
-        ON a."RegNo" = b."rollno"
-      LEFT JOIN public."ODsummary" AS c 
-        ON a."RegNo" = c."RegNo"
-      WHERE "AHOD_accept" = -1 AND "Astatus" = 0;
+    a."RegNo", 
+    a."Type", 
+    a."Reason", 
+    a."EndDate", 
+    a."Subject", 
+    a."StartDate",
+    a."ReqDate", 
+    a.id, 
+    a."Astatus",
+    b.email,
+    b.stud_name, 
+    b.department, 
+    b.cgpa,
+    b.year, 
+    b.sem, 
+    b.sec,  
+    COALESCE(c."OD", 0) AS "OD",
+    COALESCE(c."Permission", 0) AS "Permission",
+    COALESCE(sas.total_classes, 0) AS total_classes,
+    COALESCE(sas.absent_count, 0) AS absent_count
+FROM public."OdReqTable" AS a
+JOIN public."student" AS b 
+    ON a."RegNo" = b."rollno"
+LEFT JOIN public."ODsummary" AS c 
+    ON a."RegNo" = c."RegNo"
+LEFT JOIN public.student_attendance_summary AS sas
+    ON a."RegNo" = sas.student_id
+WHERE a."Astatus" = 0 
+  AND a."AHOD_accept" = -1;  -- Only show requests accepted by AHOD
+
     `;
     const result = await pool.query(query);
     console.log(result.rows);
