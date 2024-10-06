@@ -19,7 +19,7 @@ router.get('/fetchOD/:activeTab', async (req, res) => {
         a."Reason", 
         a."EndDate", 
         a."Subject", 
-        a."StartDate",
+        a."StartDate", 
         a."ReqDate", 
         a.id, 
         a."Astatus",
@@ -30,16 +30,23 @@ router.get('/fetchOD/:activeTab', async (req, res) => {
         b.year, 
         b.sem, 
         b.sec, 
-        b."Attendence", 
         COALESCE(c."OD", 0) AS "OD",
-        COALESCE(c."Permission", 0) AS "Permission"
+        COALESCE(c."Permission", 0) AS "Permission",
+		COALESCE(d.total_classes, 0) AS total_classes,
+    COALESCE(d.absent_count, 0) AS absent_count
       FROM public."OdReqTable" AS a
       JOIN public."student" AS b 
         ON a."RegNo" = b."rollno"
       LEFT JOIN public."ODsummary" AS c 
         ON a."RegNo" = c."RegNo"
-      WHERE a."Astatus" = $1 AND b.year = $2 AND b.sec = $3
-      AND a."AHOD_accept" = 1;  -- Only show requests accepted by AHOD
+		LEFT JOIN public."student_attendance_summary" AS d
+    ON b."rollno" = d."student_id"
+      WHERE a."AHOD_accept" = -1 
+        AND a."Astatus" = $1
+        AND b.year =$2 
+        AND b.sec = $3;
+		
+		 -- Only show requests accepted by AHOD
     `;
     const result = await pool.query(query, [status, year, section]);
      // Log the result
@@ -142,7 +149,7 @@ router.get('/ahod/fetchPending', async (req, res) => {
 
   try {
     const query = `
-      SELECT 
+       SELECT 
         a."RegNo", 
         a."Type", 
         a."Reason", 
@@ -160,16 +167,20 @@ router.get('/ahod/fetchPending', async (req, res) => {
         b.sem, 
         b.sec, 
         COALESCE(c."OD", 0) AS "OD",
-        COALESCE(c."Permission", 0) AS "Permission"
+        COALESCE(c."Permission", 0) AS "Permission",
+		COALESCE(d.total_classes, 0) AS total_classes,
+    COALESCE(d.absent_count, 0) AS absent_count
       FROM public."OdReqTable" AS a
       JOIN public."student" AS b 
         ON a."RegNo" = b."rollno"
       LEFT JOIN public."ODsummary" AS c 
         ON a."RegNo" = c."RegNo"
+		LEFT JOIN public."student_attendance_summary" AS d
+    ON b."rollno" = d."student_id"
       WHERE a."AHOD_accept" = -1 
         AND a."Astatus" = 0
-        AND b.year = $1 
-        AND b.sec = $2;  -- Filter by year and section
+        AND b.year =$1 
+        AND b.sec = $2; -- Filter by year and section
     `;
     
     const result = await pool.query(query, [year, section]);
