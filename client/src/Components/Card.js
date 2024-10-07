@@ -70,17 +70,17 @@ const Card = ({ data, live, onToggleExpand, isExpanded, onAccept, onDecline }) =
           </div>
         </div>
 
-        <div className="flex justify-center items-center gap-4 mt-4">
+        <div className="flex flex-wrap justify-center items-center gap-2 mt-4">
           {!live && (
             <button 
-              className="bg-white shadow-md text-purple-700 font-medium py-2 px-4 rounded hover:bg-purple-200"
+              className=" shadow-md text-white bg-green-500 font-medium py-2 px-4 rounded hover:bg-purple-200"
               onClick={(e) => { handleButtonClick(e); onAccept(); }}
             >
               Accept
             </button>
           )}
           <button 
-            className="bg-white shadow-md text-purple-700 font-medium py-2 px-4 rounded hover:bg-purple-200"
+            className=" shadow-md text-white bg-red-600 font-medium py-2 px-4 rounded hover:bg-purple-200"
             onClick={(e) => { handleButtonClick(e); onDecline(); }}
           >
             {!live ? "Decline" : "Remove"}

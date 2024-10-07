@@ -41,7 +41,7 @@ router.get('/fetchOD/:activeTab', async (req, res) => {
         ON a."RegNo" = c."RegNo"
 		LEFT JOIN public."student_attendance_summary" AS d
     ON b."rollno" = d."student_id"
-      WHERE a."AHOD_accept" = -1 
+      WHERE a."AHOD_accept" = 1 
         AND a."Astatus" = $1
         AND b.year =$2 
         AND b.sec = $3;
