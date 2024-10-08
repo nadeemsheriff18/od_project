@@ -117,7 +117,7 @@ function Od_stu_LoginPage() {
             type="submit"
             className="w-full text-lg border-2 rounded-xl p-3 bg-purple-500 text-white cursor-pointer hover:bg-purple-700 transition-all duration-300"
             value={isLogin ? "Login" : "Sign Up"}
-            onClick={(e) => handleSubmit(e, isLogin ? "stafflogin" : "staffsignup")}
+            onClick={(e) => handleSubmit(e, isLogin ? "studentlogin" : "studentsignup")}
           />
           {error && <p className="text-red-500 mt-2">{error}</p>}
         </div>

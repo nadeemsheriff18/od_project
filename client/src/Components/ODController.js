@@ -52,6 +52,7 @@ function ODController() {
       });
     },
     onSuccess: () => {
+      console.log('Request accepted successfully, invalidating queries.');
       // Invalidate queries to ensure fresh data
       queryClient.invalidateQueries(['odRequests']);
     },
@@ -61,6 +62,7 @@ function ODController() {
   });
 
   const handleAccept = (id, RegNo) => {
+    console.log('Accept button clicked for ID:', id, 'RegNo:', RegNo);
     mutation.mutate({ id, RegNo });
   };
 

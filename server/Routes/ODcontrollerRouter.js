@@ -61,6 +61,7 @@ router.get('/fetchOD/:activeTab', async (req, res) => {
 // Update Astatus and OD/Permissions based on RegNo
 // Update Astatus and OD/Permissions based on RegNo (for Accept/Decline by HOD)
 router.patch('/updateStatus', async (req, res) => {
+  console.log('Received data:', req.body);
   const { id, RegNo, status, isRequestTab } = req.body;
 
   const client = await pool.connect();
@@ -91,7 +92,7 @@ router.patch('/updateStatus', async (req, res) => {
     `;
     const updateStatusValues = [status, RegNo, id];
     const statusResult = await client.query(updateStatusQuery, updateStatusValues);
-
+    console.log('Status update result:', statusResult);
     if (statusResult.rowCount === 0) {
       await client.query('ROLLBACK');
       return res.status(404).json({ message: 'Request not found' });
