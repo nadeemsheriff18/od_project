@@ -61,8 +61,7 @@ router.get('/fetchOD/:activeTab', async (req, res) => {
 // Update Astatus and OD/Permissions based on RegNo
 // Update Astatus and OD/Permissions based on RegNo (for Accept/Decline by HOD)
 router.patch('/updateStatus', async (req, res) => {
-  console.log('Received data:', req.body);
-  const { id, RegNo, status, isRequestTab } = req.body;
+  const { id, RegNo, status, live } = req.body;
 
   const client = await pool.connect();
 
@@ -92,34 +91,40 @@ router.patch('/updateStatus', async (req, res) => {
     `;
     const updateStatusValues = [status, RegNo, id];
     const statusResult = await client.query(updateStatusQuery, updateStatusValues);
-    console.log('Status update result:', statusResult);
+
     if (statusResult.rowCount === 0) {
       await client.query('ROLLBACK');
       return res.status(404).json({ message: 'Request not found' });
     }
 
     // If declined (status === -1), no OD/Permission count updates
-    if (status === -1) {
+    if (!live && status === -1) {
       // Just update the Astatus to -1, no further changes needed for counts
       await client.query('COMMIT');
       return res.status(200).json({ message: 'Request declined successfully' });
+      
     }
 
     // Continue with OD or Permission count update only if accepted (status === 1)
     let updateCountQuery = '';
-    if (Type === 'permission' && status === 1) {
-      updateCountQuery = `
-        UPDATE public."ODsummary" 
-        SET "Permission" = "Permission" + 1 
-        WHERE "RegNo" = $1;
-      `;
-    } else if (Type === 'on-duty' && status === 1) {
-      updateCountQuery = `
-        UPDATE public."ODsummary" 
-        SET "OD" = "OD" + 1 
-        WHERE "RegNo" = $1;
-      `;
-    }
+    console.log(live);
+      const oper = live && status==-1 ?'-':'+';
+      if ( Type === 'permission') {
+        updateCountQuery = `
+          UPDATE public."ODsummary" 
+          SET "Permission" = "Permission" ${oper} 1 
+          WHERE "RegNo" = $1;
+        `;
+      } else if ( Type === 'on-duty'  ) {
+        updateCountQuery = `
+          UPDATE public."ODsummary" 
+          SET "OD" = "OD" ${oper} 1 
+          WHERE "RegNo" = $1;
+        `;
+      }
+    
+    
+   
 
     if (updateCountQuery) {
       const countResult = await client.query(updateCountQuery, [RegNo]);

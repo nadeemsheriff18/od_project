@@ -28,14 +28,16 @@ root.render(
       <Route exact path="/">
         <LOGIN />
       </Route>
-        <ProtectedRoute path="/student" role="student" component={Student} />
-      <ProtectedRoute path="/admin" role="admin" component={ODController} />  
+        {/* <ProtectedRoute path="/student" role="student" component={Student} />
+      <ProtectedRoute path="/admin" role="admin" component={ODController} />   */}
       <Route path="/student"><Student/>
       </Route>
       <Route path="/admin"><ODController/>
       </Route>
+      <Route path="/ahod"><AHODDashboard/>
+      </Route>
     
-      <ProtectedRoute path="/ahod" role="ahod" component={AHODDashboard}/>
+      {/* <ProtectedRoute path="/ahod" role="ahod" component={AHODDashboard}/> */}
       
       
       <Route path="/adminControl"><AdminControl/>

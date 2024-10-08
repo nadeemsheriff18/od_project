@@ -28,11 +28,12 @@ function ODController() {
 
   // Use mutation for accepting requests
   const mutation = useMutation({
-    mutationFn: async ({ id, RegNo }) => {
+    mutationFn: async ({ id, RegNo, live }) => {
       await axios.patch(`/api/ODController/updateStatus`, {
         id,
         RegNo,
         status: 1, // Update status to accepted
+        live:live,
       });
     },
     onSuccess: () => {
@@ -44,15 +45,15 @@ function ODController() {
     },
   });
   const mutation1 = useMutation({
-    mutationFn: async ({ id, RegNo }) => {
+    mutationFn: async ({ id, RegNo , live }) => {
       await axios.patch(`/api/ODController/updateStatus`, {
         id,
         RegNo,
         status: -1, // Update status to declined
+        live:live,
       });
     },
     onSuccess: () => {
-      console.log('Request accepted successfully, invalidating queries.');
       // Invalidate queries to ensure fresh data
       queryClient.invalidateQueries(['odRequests']);
     },
@@ -61,13 +62,12 @@ function ODController() {
     },
   });
 
-  const handleAccept = (id, RegNo) => {
-    console.log('Accept button clicked for ID:', id, 'RegNo:', RegNo);
-    mutation.mutate({ id, RegNo });
+  const handleAccept = (id, RegNo,live) => {
+    mutation.mutate({ id, RegNo,live });
   };
 
-  const handleDecline = async (id, RegNo) => {
-    mutation1.mutate({ id, RegNo });
+  const handleDecline = async (id, RegNo , live) => {
+    mutation1.mutate({ id, RegNo , live });
   };
 
   const handleToggleExpand = (id) => {
@@ -153,8 +153,8 @@ function ODController() {
                   data={request}
                   isExpanded={expandedCardId === request.id}
                   onToggleExpand={() => handleToggleExpand(request.id)}
-                  onAccept={() => handleAccept(request.id, request.RegNo)}
-                  onDecline={() => handleDecline(request.id, request.RegNo)}
+                  onAccept={handleAccept}
+                  onDecline={ handleDecline}
                 />
               ))
             )}
@@ -179,7 +179,7 @@ function ODController() {
                     data={request}
                     isExpanded={expandedCardId === request.id}
                     onToggleExpand={() => handleToggleExpand(request.id)}
-                    onDecline={() => handleDecline(request.id, request.RegNo)}
+                    onDecline={handleDecline}
                   />
                 ))}
               </div>
