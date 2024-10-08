@@ -9,7 +9,7 @@ import pool from '../DB/DPPG.js'; // Ensure this file exports a configured pool
 router.get('/fetchOD/:activeTab', async (req, res) => {
   const status = req.params.activeTab === 'odRequest' ? 0 : 1; // Determine if fetching requests or closed requests
   const { year, section } = req.query;
-  console.log('Year:', year, 'Section:', section); // Log to verify
+   // Log to verify
 
   try {
     const query = `
@@ -61,7 +61,6 @@ router.get('/fetchOD/:activeTab', async (req, res) => {
 // Update Astatus and OD/Permissions based on RegNo
 // Update Astatus and OD/Permissions based on RegNo (for Accept/Decline by HOD)
 router.patch('/updateStatus', async (req, res) => {
-  console.log('Received data:', req.body);
   const { id, RegNo, status, isRequestTab } = req.body;
 
   const client = await pool.connect();
@@ -75,15 +74,15 @@ router.patch('/updateStatus', async (req, res) => {
       WHERE "RegNo" = $1 AND id = $2;
     `;
     const fetchTypeResult = await client.query(fetchTypeQuery, [RegNo, id]);
-
+      
     if (fetchTypeResult.rowCount === 0) {
       await client.query('ROLLBACK');
       return res.status(404).json({ message: 'Record not found' });
     }
 
     const { Type } = fetchTypeResult.rows[0];
-
-    // Update Astatus (Accept = 1, Decline = -1)
+    console.log(Type);
+    // Update Astatus
     const updateStatusQuery = `
       UPDATE public."OdReqTable" 
       SET "Astatus" = $1 
@@ -92,35 +91,50 @@ router.patch('/updateStatus', async (req, res) => {
     `;
     const updateStatusValues = [status, RegNo, id];
     const statusResult = await client.query(updateStatusQuery, updateStatusValues);
-    console.log('Status update result:', statusResult);
+
     if (statusResult.rowCount === 0) {
       await client.query('ROLLBACK');
-      return res.status(404).json({ message: 'Request not found' });
+      return res.status(404).json({ message: 'Record not found' });
     }
 
-    // If declined (status === -1), no OD/Permission count updates
-    if (status === -1) {
-      // Just update the Astatus to -1, no further changes needed for counts
-      await client.query('COMMIT');
-      return res.status(200).json({ message: 'Request declined successfully' });
-    }
-
-    // Continue with OD or Permission count update only if accepted (status === 1)
+    // Determine how to update OD or Permission counts
     let updateCountQuery = '';
-    if (Type === 'permission' && status === 1) {
-      updateCountQuery = `
-        UPDATE public."ODsummary" 
-        SET "Permission" = "Permission" + 1 
-        WHERE "RegNo" = $1;
-      `;
-    } else if (Type === 'on-duty' && status === 1) {
-      updateCountQuery = `
-        UPDATE public."ODsummary" 
-        SET "OD" = "OD" + 1 
-        WHERE "RegNo" = $1;
-      `;
+
+    if (Type === 'permission') {
+      if (isRequestTab && status === 1) {
+        // Accepted: Increase Permission count
+        updateCountQuery = `
+          UPDATE public."ODsummary" 
+          SET "Permission" = "Permission" + 1 
+          WHERE "RegNo" = $1;
+        `;
+      } else if (!isRequestTab && status === -1) {
+        // Closed: Decrease Permission count
+        updateCountQuery = `
+          UPDATE public."ODsummary" 
+          SET "Permission" = "Permission" - 1 
+          WHERE "RegNo" = $1;
+        `;
+      }
+    } else if (Type === 'on-duty') {
+      if (isRequestTab && status === 1) {
+        // Accepted: Increase OD count
+        updateCountQuery = `
+          UPDATE public."ODsummary" 
+          SET "OD" = "OD" + 1 
+          WHERE "RegNo" = $1;
+        `;
+      } else if (!isRequestTab && status === -1) {
+        // Closed: Decrease OD count
+        updateCountQuery = `
+          UPDATE public."ODsummary" 
+          SET "OD" = "OD" - 1 
+          WHERE "RegNo" = $1;
+        `;
+      }
     }
 
+    // Execute count update if applicable
     if (updateCountQuery) {
       const countResult = await client.query(updateCountQuery, [RegNo]);
       if (countResult.rowCount === 0) {
@@ -131,7 +145,6 @@ router.patch('/updateStatus', async (req, res) => {
 
     await client.query('COMMIT');
     res.status(200).json({ message: 'Status and count updated successfully' });
-
   } catch (error) {
     await client.query('ROLLBACK');
     console.error('Error updating status:', error);
@@ -140,7 +153,6 @@ router.patch('/updateStatus', async (req, res) => {
     client.release();
   }
 });
-
 
 
 
