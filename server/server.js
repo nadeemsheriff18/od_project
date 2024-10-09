@@ -1,6 +1,5 @@
 import express from 'express';
 import cors from 'cors';
-import Pg from 'pg';
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import ODController from './Routes/ODcontrollerRouter.js';
