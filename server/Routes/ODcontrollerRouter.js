@@ -122,10 +122,6 @@ router.patch('/updateStatus', async (req, res) => {
           WHERE "RegNo" = $1;
         `;
       }
-    
-    
-   
-
     if (updateCountQuery) {
       const countResult = await client.query(updateCountQuery, [RegNo]);
       if (countResult.rowCount === 0) {
