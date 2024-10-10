@@ -150,7 +150,7 @@ const Student = () => {
                 <button type="button" className="bg-violet-100 rounded-xl p-2 w-full lg:w-auto mb-4 lg:mb-0">
                   OD request
                 </button>
-                <Link to="/history" className="w-full lg:w-auto">
+                <Link to={`/history/${studentData?.rollno}`} className="w-full lg:w-auto">
                   <button type="button" className="w-full lg:w-auto">
                     History
                   </button>

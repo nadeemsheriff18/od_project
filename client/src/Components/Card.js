@@ -1,11 +1,15 @@
 import React, { useMemo } from 'react';
 
+import { useCookies } from 'react-cookie';
+
 const formatDate = (dateStr) => {
   const date = new Date(dateStr);
   return date.toLocaleDateString('en-GB'); // Format as dd/mm/yyyy
 };
 
 const Card = ({ data, live, onToggleExpand, isExpanded, onAccept, onDecline }) => {
+  const [cookies] = useCookies(['Role']);
+  
   const supervisor = "CSBS HOD";
   const od = data.Type === 'on-duty' ? data.OD : data.Permission;
 
@@ -69,23 +73,34 @@ const Card = ({ data, live, onToggleExpand, isExpanded, onAccept, onDecline }) =
             </div>
           </div>
         </div>
-
-        <div className="flex flex-wrap justify-center items-center gap-2 mt-4">
-          {!live && (
-           <button 
-           className=" shadow-md text-white bg-green-500 font-medium py-2 px-4 rounded hover:bg-purple-200"
-           onClick={(e) => { handleButtonClick(e); onAccept(data.id, data.RegNo, live); }} // Correctly pass live
-         >
-           Accept
-         </button>
-          )}
-          <button 
-          className=" shadow-md text-white bg-red-600 font-medium py-2 px-4 rounded hover:bg-purple-200"
-          onClick={(e) => { handleButtonClick(e); onDecline(data.id, data.RegNo, live); }} // Correctly pass live
+        {
+  cookies.Role === "student" ? null : (
+    <div className="flex flex-wrap justify-center items-center gap-2 mt-4">
+      {!live && (
+        <button
+          className="shadow-md text-white bg-green-500 font-medium py-2 px-4 rounded hover:bg-purple-200"
+          onClick={(e) => {
+            handleButtonClick(e);
+            onAccept(data.id, data.RegNo, live); // Pass live correctly
+          }}
         >
-          {!live ? "Decline" : "Remove"}
+          Accept
         </button>
-        </div>
+      )}
+      <button
+        className="shadow-md text-white bg-red-600 font-medium py-2 px-4 rounded hover:bg-purple-200"
+        onClick={(e) => {
+          handleButtonClick(e);
+          onDecline(data.id, data.RegNo, live); // Pass live correctly
+        }}
+      >
+        {!live ? "Decline" : "Remove"}
+      </button>
+    </div>
+  )
+}
+
+        
       </div>
 
       <div 
