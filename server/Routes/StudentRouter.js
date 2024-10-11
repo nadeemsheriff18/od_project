@@ -21,37 +21,40 @@ router.post('/submitOD', async (req, res) => {
     }
 });
 
-router.get(`/history/StuHistory/${rollno}`, async(req,res)=>{
-    const {rollno} = req.params; 
-    try {
-        const query = `
-          SELECT 
-            a."Type", 
-            a."Reason", 
-            a."EndDate", 
-            a."Subject", 
-            a."StartDate", 
-            a."ReqDate", 
-            a.id,
-            a."Astatus",
-            b.department,
-            COALESCE(c."OD", 0) AS "OD",
-            COALESCE(c."Permission", 0) AS "Permission",
-          FROM public."OdReqTable" AS a
-          JOIN public."student" AS b 
-            ON a."RegNo" = b."rollno"
-          LEFT JOIN public."ODsummary" AS c 
-            ON a."RegNo" = c."RegNo"
-          WHERE a."RegNo" = 1$
-        `;
-        const result = await pool.query(query, [rollno]);
-         // Log the result
-        res.status(200).json(result.rows);
-      } catch (err) {
-        console.error('Error fetching data:', err);
-        res.status(500).send('Internal server error');
-      }
-})
+ router.get(`/history/StuHistory/:rollno`, async(req,res)=>{
+     const {rollno} = req.params;
+     console .log(rollno)
+     try {
+         const query = `
+           SELECT 
+    a."Type", 
+    a."Reason", 
+    a."EndDate", 
+    a."Subject", 
+    a."StartDate", 
+    a."ReqDate", 
+    a.id,
+    a."Astatus",
+    b.department,
+    COALESCE(c."OD", 0) AS "OD",
+    COALESCE(c."Permission", 0) AS "Permission"
+FROM public."OdReqTable" AS a
+JOIN public."student" AS b 
+    ON a."RegNo" = b."rollno"
+LEFT JOIN public."ODsummary" AS c 
+    ON a."RegNo" = c."RegNo"
+WHERE a."RegNo" = $1
+ORDER BY a."Astatus" DESC; 
+         `;
+         const result = await pool.query(query, [rollno]);
+          // Log the result
+          console.log(result.rows)
+         res.status(200).json(result.rows);
+       } catch (err) {
+         console.error('Error fetching data:', err);
+         res.status(500).send('Internal server error');
+       }
+ })
 
 router.get('/:email', async (req, res) => {
     const email = req.params.email;

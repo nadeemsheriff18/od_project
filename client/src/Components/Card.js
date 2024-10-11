@@ -41,20 +41,62 @@ const Card = ({ data, live, onToggleExpand, isExpanded, onAccept, onDecline }) =
       <div className="flex">
         <div className={`w-16 h-16 rounded-full flex items-center justify-center ${data.Type === "on-duty" ? 'text-purple-700 bg-purple-200' : 'text-blue-700 bg-blue-200'}`}>
           <span className="text-md font-bold">{data.Type}</span>
+          
         </div>
+        
 
         <div className="ml-4 flex-1">
+        
           <div className="space-y-3 text-gray-700">
-            {renderLabelValue("Name", data.stud_name)}
-            {renderLabelValue("Register", data.RegNo)}
-            {renderLabelValue("Department", data.department)}
+          {cookies.Role === "student" ? (
+  <>
+ 
+ <div className='flex gap-2'>
+ <p className={`font-bold bg-opacity-25 w-fit rounded-md p-1 
+  ${data.Astatus === -20 || data.Astatus === 0 ? 'text-blue-500 bg-blue-500 ' : ''}
+  ${data.Astatus === -21 || data.Astatus === 1 ? 'text-green-500 bg-green-500' : ''}
+  ${data.Astatus === -22 || data.Astatus === -1 ? 'text-red-500 bg-red-500' : ''}
+`}>
+  {data.Astatus === -20 && 'IGNORED'}
+  {data.Astatus === -21 && 'ACCEPTED'}
+  {data.Astatus === -22 && 'REJECTED'}
+  {data.Astatus === 0 && 'PENDING'}
+  {data.Astatus === 1 && 'ACCEPTED'}
+  {data.Astatus === -1 && 'REJECTED'}
+
+ 
+  
+</p>
+<p className={`font-bold bg-opacity-25 w-fit rounded-md p-1 
+  ${data.Astatus === 1 || data.Astatus === 0 ? 'text-green-500 bg-green-500' : ''} 
+  ${data.Astatus === -20 || data.Astatus === -21 ? 'text-red-500 bg-red-500' : ''}
+`}>
+  {(data.Astatus === 1 || data.Astatus === 0) ? 'LIVE' : (data.Astatus === -20 || data.Astatus === -21) ? 'EXPIRED' : ''}
+</p>
+
+ </div>
+  </>
+) : null}
+          
+          {cookies.Role !== "student" ? (
+  <>
+ 
+    {renderLabelValue("Name", data.stud_name)}
+    {renderLabelValue("Register", data.RegNo)}
+    {renderLabelValue("Department", data.department)}
+  </>
+) : null}
+            
+            
             {renderLabelValue("Supervisor", supervisor)}
             {renderLabelValue("Req Date", formatDate(data.ReqDate))}
             {renderLabelValue(`${data.Type} Date`, `${formatDate(data.StartDate)} - ${formatDate(data.EndDate)}`)}
             {renderLabelValue("Subject", data.Subject)}
 
             {/* Attendance and ODs with conditional color */} 
-            <div className="flex flex-wrap mb-2">
+            {cookies.Role !== "student" ? (
+  <>
+    <div className="flex flex-wrap mb-2">
               <p className="w-32 font-normal mr-4 text-purple-800">
                 <strong>Attendance:</strong>
               </p>
@@ -71,6 +113,10 @@ const Card = ({ data, live, onToggleExpand, isExpanded, onAccept, onDecline }) =
                 {od}
               </p>
             </div>
+  </>
+) : null}
+            
+            
           </div>
         </div>
         {
