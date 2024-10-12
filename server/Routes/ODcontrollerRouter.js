@@ -8,8 +8,8 @@ import pool from '../DB/DPPG.js'; // Ensure this file exports a configured pool
 // Fetch requests based on the active tab for HOD
 router.get('/fetchOD/:activeTab', async (req, res) => {
   const status = req.params.activeTab === 'odRequest' ? 0 : 1; // Determine if fetching requests or closed requests
-  const { year, section } = req.query;
-  console.log('Year:', year, 'Section:', section); // Log to verify
+  const { year, section ,role} = req.query;
+  console.log('Year:', year, 'Section:', section ,  'Active tab:' , req.params.activeTab); // Log to verify
 
   try {
     const query = `
@@ -41,11 +41,9 @@ router.get('/fetchOD/:activeTab', async (req, res) => {
         ON a."RegNo" = c."RegNo"
 		LEFT JOIN public."student_attendance_summary" AS d
     ON b."rollno" = d."student_id"
-      WHERE a."AHOD_accept" = 1 
-        AND a."Astatus" = $1
+      WHERE ${role==="ahod"?('a."AHOD_accept"=$1 AND a."Astatus"=0'):('a."AHOD_accept"=1 AND a."Astatus"=$1')}
         AND b.year =$2 
         AND b.sec = $3;
-		
 		 -- Only show requests accepted by AHOD
     `;
     const result = await pool.query(query, [status, year, section]);
@@ -61,9 +59,12 @@ router.get('/fetchOD/:activeTab', async (req, res) => {
 // Update Astatus and OD/Permissions based on RegNo
 // Update Astatus and OD/Permissions based on RegNo (for Accept/Decline by HOD)
 router.patch('/updateStatus', async (req, res) => {
-  const { id, RegNo, status, live } = req.body;
-
+  const { id, RegNo, status, live,role } = req.body;
+console.log(role);
   const client = await pool.connect();
+  console.log(status);
+  console.log(RegNo);
+  console.log(id);
 
   try {
     await client.query('BEGIN');
@@ -81,16 +82,26 @@ router.patch('/updateStatus', async (req, res) => {
     }
 
     const { Type } = fetchTypeResult.rows[0];
-
+    // // AHOD
+    // const updateQuery = `
+    //   UPDATE public."OdReqTable" --------------------------------------
+    //   SET "AHOD_accept" = $1
+    //   WHERE "RegNo" = $2 AND id = $3;
+    // `;
+    // await pool.query(updateQuery, [status, RegNo, id]);
     // Update Astatus (Accept = 1, Decline = -1)
+    
     const updateStatusQuery = `
-      UPDATE public."OdReqTable" 
-      SET "Astatus" = $1 
-      WHERE "RegNo" = $2 AND id = $3
-      RETURNING *;
-    `;
+  UPDATE public."OdReqTable" 
+  SET ${role === "ahod" ? '"AHOD_accept"' : '"Astatus"'} = $1 
+  WHERE "RegNo" = $2 AND id = $3
+  RETURNING *;
+`;
+console.log(updateStatusQuery);
+
     const updateStatusValues = [status, RegNo, id];
     const statusResult = await client.query(updateStatusQuery, updateStatusValues);
+    console.log(statusResult.rows)
 
     if (statusResult.rowCount === 0) {
       await client.query('ROLLBACK');
@@ -106,6 +117,7 @@ router.patch('/updateStatus', async (req, res) => {
     }
 
     // Continue with OD or Permission count update only if accepted (status === 1)
+    if(role !== "ahod"){
     let updateCountQuery = '';
     console.log(live);
       const oper = live && status==-1 ?'-':'+';
@@ -129,10 +141,10 @@ router.patch('/updateStatus', async (req, res) => {
         return res.status(400).json({ message: `${Type} count not updated` });
       }
     }
-
+  }
     await client.query('COMMIT');
     res.status(200).json({ message: 'Status and count updated successfully' });
-
+  
   } catch (error) {
     await client.query('ROLLBACK');
     console.error('Error updating status:', error);
@@ -142,75 +154,75 @@ router.patch('/updateStatus', async (req, res) => {
   }
 });
 
+// router.patch('/ahod/updateStatus', async (req, res) => {
+//   const { id, RegNo, status } = req.body; // status = 1 (accept), 0 (decline)
 
+//   try {
+//     const updateQuery = `
+//       UPDATE public."OdReqTable" --------------------------------------
+//       SET "AHOD_accept" = $1
+//       WHERE "RegNo" = $2 AND id = $3;
+//     `;
+//     await pool.query(updateQuery, [status, RegNo, id]);
+
+//     res.status(200).json({ message: 'AHOD approval updated successfully' });
+//   } catch (err) {
+//     console.error('Error updating AHOD approval:', err);
+//     res.status(500).send('Internal server error');
+//   }
+// });
 
 
 // Fetch OD requests pending AHOD approval
-router.get('/ahod/fetchPending', async (req, res) => {
-  const { year, section } = req.query; // Retrieve year and section from the query parameters
+// router.get('/ahod/fetchPending', async (req, res) => {
+//   const { year, section } = req.query; // Retrieve year and section from the query parameters
 
-  try {
-    const query = `
-       SELECT 
-        a."RegNo", 
-        a."Type", 
-        a."Reason", 
-        a."EndDate", 
-        a."Subject", 
-        a."StartDate", 
-        a."ReqDate", 
-        a.id, 
-        a."Astatus",
-        b.email,
-        b.stud_name, 
-        b.department, 
-        b.cgpa,
-        b.year, 
-        b.sem, 
-        b.sec, 
-        COALESCE(c."OD", 0) AS "OD",
-        COALESCE(c."Permission", 0) AS "Permission",
-		COALESCE(d.total_classes, 0) AS total_classes,
-    COALESCE(d.absent_count, 0) AS absent_count
-      FROM public."OdReqTable" AS a
-      JOIN public."student" AS b 
-        ON a."RegNo" = b."rollno"
-      LEFT JOIN public."ODsummary" AS c 
-        ON a."RegNo" = c."RegNo"
-		LEFT JOIN public."student_attendance_summary" AS d
-    ON b."rollno" = d."student_id"
-      WHERE a."AHOD_accept" = -1 
-        AND a."Astatus" = 0
-        AND b.year =$1 
-        AND b.sec = $2; -- Filter by year and section
-    `;
+//   try {
+//     const query = `
+//        SELECT 
+//         a."RegNo", 
+//         a."Type", 
+//         a."Reason", 
+//         a."EndDate", 
+//         a."Subject", 
+//         a."StartDate", 
+//         a."ReqDate", 
+//         a.id, 
+//         a."Astatus",
+//         b.email,
+//         b.stud_name, 
+//         b.department, 
+//         b.cgpa,
+//         b.year, 
+//         b.sem, 
+//         b.sec, 
+//         COALESCE(c."OD", 0) AS "OD",
+//         COALESCE(c."Permission", 0) AS "Permission",
+// 		COALESCE(d.total_classes, 0) AS total_classes,
+//     COALESCE(d.absent_count, 0) AS absent_count
+//       FROM public."OdReqTable" AS a
+//       JOIN public."student" AS b 
+//         ON a."RegNo" = b."rollno"
+//       LEFT JOIN public."ODsummary" AS c 
+//         ON a."RegNo" = c."RegNo"
+// 		LEFT JOIN public."student_attendance_summary" AS d
+//     ON b."rollno" = d."student_id"
+//       WHERE a."AHOD_accept" = -1 
+//         AND a."Astatus" = 0
+//         AND b.year =$1 
+//         AND b.sec = $2; -- Filter by year and section
+//     `;
     
-    const result = await pool.query(query, [year, section]);
-    res.status(200).json(result.rows);
-  } catch (err) {
-    console.error('Error fetching data:', err);
-    res.status(500).send('Internal server error');
-  }
-});
+//     const result = await pool.query(query, [year, section]);
+//     res.status(200).json(result.rows);
+//   } catch (err) {
+//     console.error('Error fetching data:', err);
+//     res.status(500).send('Internal server error');
+//   }
+// });
 
 // Update AHOD approval status
-router.patch('/ahod/updateStatus', async (req, res) => {
-  const { id, RegNo, status } = req.body; // status = 1 (accept), 0 (decline)
 
-  try {
-    const updateQuery = `
-      UPDATE public."OdReqTable" 
-      SET "AHOD_accept" = $1
-      WHERE "RegNo" = $2 AND id = $3;
-    `;
-    await pool.query(updateQuery, [status, RegNo, id]);
-
-    res.status(200).json({ message: 'AHOD approval updated successfully' });
-  } catch (err) {
-    console.error('Error updating AHOD approval:', err);
-    res.status(500).send('Internal server error');
-  }
-});
 
 
 

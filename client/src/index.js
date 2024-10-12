@@ -37,7 +37,7 @@ root.render(
       <Route path="/ahod"><AHODDashboard/>
       </Route>
      */}
-       <ProtectedRoute path="/ahod" role="ahod" component={AHODDashboard}/> 
+       <ProtectedRoute path="/ahod" role="ahod" component={ODController}/> 
       
       
       <Route path="/adminControl"><AdminControl/>

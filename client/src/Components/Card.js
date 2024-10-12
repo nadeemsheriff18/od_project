@@ -37,12 +37,13 @@ const Card = ({ data, live, onToggleExpand, isExpanded, onAccept, onDecline }) =
   );
 
   return (
-    <div className="mt-8 shadow-lg bg-violet-100 rounded-lg p-6 max-w-3xl w-full cursor-pointer z-10" onClick={onToggleExpand}>
+    <div className="mt-8 shadow-lg bg-violet-100 rounded-lg p-6 max-w-4xl w-auto cursor-pointer z-10" onClick={onToggleExpand}>
       <div className="flex">
         <div className={`w-16 h-16 rounded-full flex items-center justify-center ${data.Type === "on-duty" ? 'text-purple-700 bg-purple-200' : 'text-blue-700 bg-blue-200'}`}>
           <span className="text-md font-bold">{data.Type}</span>
           
         </div>
+        
         
 
         <div className="ml-4 flex-1">
@@ -77,10 +78,10 @@ const Card = ({ data, live, onToggleExpand, isExpanded, onAccept, onDecline }) =
 `}>
   {(data.Astatus >= 0) ? 'LIVE' : (data.Astatus <= -20)&&'EXPIRED'}
 </p> */}
-<ol className="flex items-center justify-between space-y-0.5 w-full">
+<ol className="flex  justify-between  w-2/4">
   {/* Step 1: AHOD Status */}
   {data.Astatus <= -19 ? (
-    <div className="relative mr-1 sm:mr-5 pt-2 ">
+    <div className="relative mr-1 sm:mr-5 pt-1 ">
       <div className="flex items-center">
         <div className={`z-10 flex items-center  pb-1 justify-center w-6 h-6 rounded-full ${data.Astatus <= -19 ? 'bg-blue-500' : 'bg-gray-500'} shrink-0`}>
         <p className="text-white font-bold text-center">&#8226;</p>
@@ -95,14 +96,14 @@ const Card = ({ data, live, onToggleExpand, isExpanded, onAccept, onDecline }) =
   <li className="relative w-full ">
     <div className="flex items-center  pt-1">
       <div className={`z-10 flex items-center justify-center w-6 h-6 rounded-full ${
-        data.AHOD_accept === -1 ? 'bg-yellow-500' : // Pending by AHOD
-        data.AHOD_accept === 0 ? 'bg-red-500' : // Rejected by AHOD
+        data.AHOD_accept === 0 ? 'bg-yellow-500' : // Pending by AHOD
+        data.AHOD_accept === -1 ? 'bg-red-500' : // Rejected by AHOD
         data.AHOD_accept === 1 ? 'bg-green-500' : // Accepted by AHOD
         'bg-gray-200' // Default
       } shrink-0`}>
-        {data.AHOD_accept === -1 ? (
+        {data.AHOD_accept === 0 ? (
           <p className='text-white font-medium pb-0.5 flex justify-center items-center'>?</p>
-        ) : data.AHOD_accept === 0 ? (
+        ) : data.AHOD_accept === -1 ? (
           <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="13" fill="#ffffff" height="13"  stroke="white" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" viewBox="0 0 50 50">
 <path d="M 9.15625 6.3125 L 6.3125 9.15625 L 22.15625 25 L 6.21875 40.96875 L 9.03125 43.78125 L 25 27.84375 L 40.9375 43.78125 L 43.78125 40.9375 L 27.84375 25 L 43.6875 9.15625 L 40.84375 6.3125 L 25 22.15625 Z"></path>
 </svg>
@@ -113,7 +114,7 @@ const Card = ({ data, live, onToggleExpand, isExpanded, onAccept, onDecline }) =
           </svg>
         ) : null}
       </div>
-      <div className={`w-full h-0.5 ${data.AHOD_accept === 1 ?  'bg-green-500':'bg-gray-500'}`}></div>
+      <div className={`w-full h-[0.155rem] ${data.AHOD_accept === 1 ?  'bg-green-500':'bg-gray-500'}`}></div>
     </div>
     <div className="pt-1 text-left"> {/* Adjusted margin-top */}
       <h3 className="font-medium text-sm">AHOD</h3>

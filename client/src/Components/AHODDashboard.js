@@ -1,112 +1,196 @@
-// components/AHODDashboard.js
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
-import Card from './Card'; // Assuming you have a Card component similar to the one used in the HOD page
+import Card from './Card';
+import { useCookies } from 'react-cookie';
 
-function AHODDashboard() {
-    const [requests, setRequests] = useState([]);
-    const [activeTab, setActiveTab] = useState('odRequest');
-    const [subTab, setSubTab] = useState(1);
-    const [subSections, setSubSections] = useState('A');
+function ODController() {
+  const queryClient = useQueryClient();
+  const [activeTab, setActiveTab] = useState('odRequest');
+  const [expandedCardId, setExpandedCardId] = useState(null);
+  const [subTab, setSubTab] = useState(1);
+  const [subSections, setSubSections] = useState('A');
+  const [cookies] = useCookies(['Role']);
+  // Fetch requests based on active tab
+  const fetchRequests = async () => {
+    const response = await axios.get(`/api/ODController/fetchOD/${activeTab}`, {
+      params: { year: subTab, section: subSections ,role: cookies.Role},
+    });
+    return response.data;
+  };
 
-    const fetchRequests = async () => {
-        try {
-            const response = await axios.get('/api/ODController/ahod/fetchPending', {
-                params: { year: subTab, section: subSections }, // Include year and section in the request
-            });
-            setRequests(response.data);
-        } catch (error) {
-            console.error('Error fetching AHOD requests:', error);
-        }
-    };
+  // Use query for fetching requests
+  const { data: requests = [] } = useQuery({
+    queryKey: ['odRequests', activeTab, subTab, subSections],
+    queryFn: fetchRequests,
+  });
 
-    useEffect(() => {
-        fetchRequests(); // Fetch requests on component mount and when filters change
-    }, [subTab, subSections]);
+  // Use mutation for accepting requests
+  const mutation = useMutation({
+    mutationFn: async ({ id, RegNo, live }) => {
+      await axios.patch(`/api/ODController/updateStatus`, {
+        id,
+        RegNo,
+        status: 1, // Update status to accepted
+        live:live,
+        role:cookies.Role,
+      });
+    },
+    onSuccess: () => {
+      // Invalidate queries to ensure fresh data
+      queryClient.invalidateQueries(['odRequests']);
+    },
+    onError: (error) => {
+      console.error('Error updating status:', error);
+    },
+  });
+  const mutation1 = useMutation({
+    mutationFn: async ({ id, RegNo , live }) => {
+      await axios.patch(`/api/ODController/updateStatus`, {
+        id,
+        RegNo,
+        status: -1, // Update status to declined
+        live:live,
+        role:cookies.Role,
+      });
+    },
+    onSuccess: () => {
+      // Invalidate queries to ensure fresh data
+      queryClient.invalidateQueries(['odRequests']);
+    },
+    onError: (error) => {
+      console.error('Error updating status:', error);
+    },
+  });
 
-    const handleAccept = async (id, RegNo) => {
-        try {
-            await axios.patch('/api/ODController/ahod/updateStatus', { id, RegNo, status: 1 });
-            setRequests(prevRequests => prevRequests.filter(req => req.id !== id));
-        } catch (error) {
-            console.error('Error accepting request:', error);
-        }
-    };
+  const handleAccept = (id, RegNo,live) => {
+    mutation.mutate({ id, RegNo,live });
+  };
 
-    const handleDecline = async (id, RegNo) => {
-        try {
-            await axios.patch('/api/ODController/ahod/updateStatus', { id, RegNo, status: 0 });
-            setRequests(prevRequests => prevRequests.filter(req => req.id !== id));
-        } catch (error) {
-            console.error('Error declining request:', error);
-        }
-    };
+  const handleDecline = async (id, RegNo , live) => {
+    mutation1.mutate({ id, RegNo , live });
+  };
 
-    // Function to change the selected year
-    const handleSubTabChange = (year) => {
-        setSubTab(year);
-    };
+  const handleToggleExpand = (id) => {
+    setExpandedCardId((prevId) => (prevId === id ? null : id));
+  };
 
-    // Function to change the selected section
-    const handleSubSectionChange = (section) => {
-        setSubSections(section);
-    };
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+  };
 
-    const Years = [1, 2, 3, 4];
-    const yearSections = {
-        1: ['A', 'B', 'C'],
-        2: ['A', 'B'],
-        3: ['A', 'B'],
-        4: ['A'],
-    };
+  const handleSubTabChange = (year) => {
+    setSubTab(year);
+  };
 
-    return (
-        <div className="p-6 bg-gray-50 min-h-screen flex flex-col items-center overflow-x-hidden">
-            <h2 className="text-2xl font-semibold text-purple-700 mt-2">Pending OD Requests</h2>
+  const handleSubSectionChange = (section) => {
+    setSubSections(section);
+  };
 
-            {/* Year Selection */}
-            <div className="flex mt-4">
-                {Years.map((year) => (
-                    <button
-                        key={year}
-                        className={`py-2 px-4 text-lg font-medium ${subTab === year ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-600'}`}
-                        onClick={() => handleSubTabChange(year)}
-                    >
-                        {year} Year
-                    </button>
+  const Years = [1, 2, 3, 4];
+  const yearSections = {
+    1: ['A', 'B', 'C'],
+    2: ['A', 'B'],
+    3: ['A', 'B'],
+    4: ['A'],
+  };
+
+  return (
+    <div className="p-6 bg-gray-50 min-h-screen flex flex-col items-center overflow-x-hidden">
+      <h2 className="text-2xl font-semibold text-purple-700 mt-2">REQUEST</h2>
+      <div className="mt-4 flex border-b border-gray-300">
+        <button
+          className={`py-2 px-4 text-lg font-medium ${activeTab === 'odRequest' ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-600'
+            }`}
+          onClick={() => handleTabChange('odRequest')}
+        >
+           REQUEST
+        </button>
+        <button
+          className={`py-2 px-4 text-lg font-medium ${activeTab === 'liveOd' ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-600'
+            }`}
+          onClick={() => handleTabChange('liveOd')}
+        >
+          {cookies.Role==="ahod"?"Forwarded to HOD":"LIVE"}
+        </button>
+      </div>
+
+      <div className="flex">
+
+        {Years.map((year) => (
+          <button
+            key={year}
+            className={`py-2 px-4 text-lg font-medium ${subTab === year ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-600'
+              }`}
+            onClick={() => handleSubTabChange(year)}
+          >
+            {year} year
+          </button>
+        ))}
+      </div>
+      <div className="flex">
+        {yearSections[subTab].map((section) => (
+          <button
+            key={section}
+            className={`py-2 px-4 text-lg font-medium ${subSections === section ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-600'
+              }`}
+            onClick={() => handleSubSectionChange(section)}
+          >
+            {section}
+          </button>
+        ))}
+      </div>
+      {activeTab === 'liveOd' && <div className='block mt-5 font-semibold text-xl'><h2>Live OD | Permission Count : {requests.length}</h2> </div>}
+      <div className="mt-4 flex flex-col items-center p-4">
+        {activeTab === 'odRequest' && (
+          <div className="w-full max-w-4xl overflow-x-hidden m-4">
+            {requests.length === 0 ? (
+              <p>No OD requests available at the moment.</p>
+            ) : (
+              requests.map((request) => (
+                <Card
+                  live={false}
+                  key={request.id}
+                  data={request}
+                  isExpanded={expandedCardId === request.id}
+                  onToggleExpand={() => handleToggleExpand(request.id)}
+                  onAccept={handleAccept}
+                  onDecline={ handleDecline}
+                />
+              ))
+            )}
+          </div>
+        )}
+        {activeTab === 'liveOd' && (
+          <div className="flex flex-col items-center mt-4 text-gray-600">
+
+            {requests.length === 0 ? (
+
+              <p>No live OD requests available at the moment.</p>
+
+
+            ) : (
+
+
+              <div className="w-full max-w-4xl overflow-x-hidden">
+                {requests.map((request) => (
+                  <Card
+                    live={true}
+                    key={request.id}
+                    data={request}
+                    isExpanded={expandedCardId === request.id}
+                    onToggleExpand={() => handleToggleExpand(request.id)}
+                    onDecline={handleDecline}
+                  />
                 ))}
-            </div>
+              </div>
 
-            {/* Section Selection */}
-            <div className="flex mt-2">
-                {yearSections[subTab].map((section) => (
-                    <button
-                        key={section}
-                        className={`py-2 px-4 text-lg font-medium ${subSections === section ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-600'}`}
-                        onClick={() => handleSubSectionChange(section)}
-                    >
-                        {section}
-                    </button>
-                ))}
-            </div>
-
-            {/* Display Requests */}
-            <div className="mt-4 flex flex-col items-center w-full max-w-4xl">
-                {requests.length === 0 ? (
-                    <p>No requests pending approval</p>
-                ) : (
-                    requests.map(request => (
-                        <Card
-                            key={request.id}
-                            data={request}
-                            onAccept={() => handleAccept(request.id, request.RegNo)}
-                            onDecline={() => handleDecline(request.id, request.RegNo)}
-                        />
-                    ))
-                )}
-            </div>
-        </div>
-    );
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
 
-export default AHODDashboard;
+export default ODController;
