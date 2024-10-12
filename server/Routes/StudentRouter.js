@@ -35,7 +35,7 @@ router.post('/submitOD', async (req, res) => {
     a."ReqDate", 
     a.id,
     a."Astatus",
-    b.department,
+    a."AHOD_accept",
     COALESCE(c."OD", 0) AS "OD",
     COALESCE(c."Permission", 0) AS "Permission"
 FROM public."OdReqTable" AS a

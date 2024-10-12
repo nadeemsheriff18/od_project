@@ -77,7 +77,7 @@ const updateExpiredRecords = async () => {
       UPDATE public."OdReqTable"
       SET "Astatus" = CASE
         WHEN "Astatus" = 1 THEN -21
-        WHEN "Astatus" = -1 THEN -22
+        WHEN "Astatus" = -1 THEN -19
         ELSE -20
       END
       WHERE "EndDate" < CURRENT_DATE;
