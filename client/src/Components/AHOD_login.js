@@ -1,9 +1,10 @@
 import React from 'react'
-import Od_ahod_LoginPage from './Od_ahod_LoginPage'
+import LoginPage from './LoginPage'
 const AHOD_login = () => {
   return (
     <div className='relative'>
-          <Od_ahod_LoginPage />
+          <LoginPage role="ahod" loginEndpoint="ahodlogin" signupEndpoint="ahodsignup" redirectPath="/ahod" />
+
     </div>
   )
 }

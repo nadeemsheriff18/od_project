@@ -1,10 +1,8 @@
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { useCookies } from "react-cookie";
 
-function Od_stu_LoginPage() {
-
+function LoginPage({ role, loginEndpoint, signupEndpoint, redirectPath }) {
   const [cookies, setCookie, removeCookie] = useCookies(["Role"]);
   const [isLogin, setIsLogin] = useState(true);
   const [error, setError] = useState(null);
@@ -17,7 +15,6 @@ function Od_stu_LoginPage() {
   const viewLogin = (status) => {
     setIsLogin(status);
     setError(null);
-    //hi
   };
 
   const handleSubmit = async (e, endpoint) => {
@@ -28,7 +25,7 @@ function Od_stu_LoginPage() {
     }
 
     try {
-      const response = await fetch(`http://localhost:3001/${endpoint}`, {
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -42,17 +39,7 @@ function Od_stu_LoginPage() {
         setCookie("AuthToken", data.token);
         setCookie("Role", data.role);
 
-
-        if (data.role === "admin") {
-          history.push("/admin");
-        } else if (data.role === "student") {
-          history.push("/student");
-        } else {
-          setError("Invalid role detected.");
-          removeCookie("Email");
-          removeCookie("AuthToken");
-          removeCookie("Role");
-        }
+        history.push(redirectPath);
       }
     } catch (err) {
       console.error("Error:", err);
@@ -60,20 +47,13 @@ function Od_stu_LoginPage() {
     }
   };
 
-
-
   return (
     <div className="min-h-screen bg-violet-100 flex flex-col items-center justify-center px-4">
-      {/* Main Container */}
       <h1 className="mt-4 mb-9 text-3xl font-semibold text-purple-800 text-center">DEPARTMENT OF CSBS</h1>
-      
-      <form className="w-full max-w-md flex flex-col shadow-lg p-8 rounded-2xl bg-white">
-        {/* Welcome Text */}
-        <h1 className="flex justify-center items-center mb-9 text-2xl text-violet-800 font-bold">
-          Welcome
-        </h1>
 
-        {/* Email Input */}
+      <form className="w-full max-w-md flex flex-col shadow-lg p-8 rounded-2xl bg-white">
+        <h1 className="flex justify-center items-center mb-9 text-2xl text-violet-800 font-bold">Welcome {role}</h1>
+
         <div className="mb-4">
           <input
             type="email"
@@ -85,7 +65,6 @@ function Od_stu_LoginPage() {
           />
         </div>
 
-        {/* Password Input */}
         <div className="mb-6">
           <input
             placeholder="Password"
@@ -97,7 +76,6 @@ function Od_stu_LoginPage() {
           />
         </div>
 
-        {/* Confirm Password for Sign Up */}
         {!isLogin && (
           <div className="mb-6">
             <input
@@ -111,25 +89,20 @@ function Od_stu_LoginPage() {
           </div>
         )}
 
-        {/* Submit Button */}
         <div className="mb-6">
           <input
             type="submit"
             className="w-full text-lg border-2 rounded-xl p-3 bg-purple-500 text-white cursor-pointer hover:bg-purple-700 transition-all duration-300"
             value={isLogin ? "Login" : "Sign Up"}
-            onClick={(e) => handleSubmit(e, isLogin ? "stafflogin" : "staffsignup")}
+            onClick={(e) => handleSubmit(e, isLogin ? loginEndpoint : signupEndpoint)}
           />
           {error && <p className="text-red-500 mt-2">{error}</p>}
         </div>
 
-        {/* Forgot Password */}
         <div className="flex justify-center mb-6">
-          <Link to="/forgotpwd" className="text-purple-500 hover:underline">
-            Forgot Password?
-          </Link>
+          <Link to="/forgotpwd" className="text-purple-500 hover:underline">Forgot Password?</Link>
         </div>
 
-        {/* Toggle between Login and Signup */}
         <div className="flex justify-between items-center mt-6">
           <button
             onClick={() => viewLogin(false)}
@@ -147,7 +120,6 @@ function Od_stu_LoginPage() {
       </form>
     </div>
   );
-};
+}
 
-
-export default Od_stu_LoginPage;
+export default LoginPage;

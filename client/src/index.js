@@ -8,9 +8,9 @@ import Odheader from './Components/Odheader';
 import DeniedAccess from './Components/DeniedAccess';
 import History from './Components/History';
 import Student from './Components/Student';
-import LOGIN from './Components/LOGIN';
+import Student_Login from './Components/Student_Login';
 import ODController from './Components/ODController';
-import Staff_login from './Components/Staff_login';
+import HOD_login from './Components/HOD_login';
 import AHOD_login from './Components/AHOD_login';
 //import AhodAccess from './Components/AhodAccess';
 import AHODDashboard from './Components/AHODDashboard';
@@ -26,7 +26,7 @@ root.render(
     <Odheader />
     <Switch>
       <Route exact path="/">
-        <LOGIN />
+        <Student_Login />
       </Route>
          <ProtectedRoute path="/student" role="student" component={Student} />
       <ProtectedRoute path="/admin" role="admin" component={ODController} />   
@@ -47,7 +47,7 @@ root.render(
         <History />
       </Route>
       <Route path="/stafflogin">
-        <Staff_login />
+        <HOD_login />
       </Route>
       <Route path="/ahodlogin">
         <AHOD_login />
