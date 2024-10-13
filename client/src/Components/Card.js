@@ -216,7 +216,7 @@ const Card = ({ data, live, onToggleExpand, isExpanded, onAccept, onDecline }) =
           className="shadow-md text-white bg-green-500 font-medium py-2 px-4 rounded hover:bg-purple-200"
           onClick={(e) => {
             handleButtonClick(e);
-            onAccept(data.id, data.RegNo, live); // Pass live correctly
+            onAccept(data.id, data.RegNo,data.Type , live); // Pass live correctly
           }}
         >
           Accept
@@ -226,7 +226,8 @@ const Card = ({ data, live, onToggleExpand, isExpanded, onAccept, onDecline }) =
         className="shadow-md text-white bg-red-600 font-medium py-2 px-4 rounded hover:bg-purple-200"
         onClick={(e) => {
           handleButtonClick(e);
-          onDecline(data.id, data.RegNo, live); // Pass live correctly
+          onDecline(data.id, data.RegNo,data.Type. live); // Pass live correctly
+         
         }}
       >
         {!live ? "Decline" : "Remove"}

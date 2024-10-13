@@ -27,13 +27,14 @@ function ODController() {
 
   // Use mutation for accepting requests
   const mutation = useMutation({
-    mutationFn: async ({ id, RegNo, live }) => {
+    mutationFn: async ({ id, RegNo,Type, live }) => {
       await axios.patch(`/api/ODController/updateStatus`, {
         id,
         RegNo,
         status: 1, // Update status to accepted
         live:live,
         role:cookies.Role,
+        Type,
       });
     },
     onSuccess: () => {
@@ -45,13 +46,14 @@ function ODController() {
     },
   });
   const mutation1 = useMutation({
-    mutationFn: async ({ id, RegNo , live }) => {
+    mutationFn: async ({ id, RegNo ,Type, live }) => {
       await axios.patch(`/api/ODController/updateStatus`, {
         id,
         RegNo,
         status: -1, // Update status to declined
         live:live,
         role:cookies.Role,
+        Type,
       });
     },
     onSuccess: () => {
@@ -63,12 +65,13 @@ function ODController() {
     },
   });
 
-  const handleAccept = (id, RegNo,live) => {
-    mutation.mutate({ id, RegNo,live });
+  const handleAccept = (id, RegNo, Type ,live) => {
+    mutation.mutate({ id, RegNo,Type,live });
+  
   };
 
-  const handleDecline = async (id, RegNo , live) => {
-    mutation1.mutate({ id, RegNo , live });
+  const handleDecline = async (id, RegNo ,Type, live) => {
+    mutation1.mutate({ id, RegNo ,Type, live });
   };
 
   const handleToggleExpand = (id) => {

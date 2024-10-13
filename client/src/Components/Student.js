@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-
+import  { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useCookies } from 'react-cookie';
@@ -19,8 +19,7 @@ const Student = () => {
     const [cookies] = useCookies(['Email', 'AuthToken']);
     const [studentData, setStudentData] = useState(null); // Access the cookies you set earlier
 
-    const MAX_CHARACTERS = 90; // Adjust the limit as needed
-
+    const MAX_CHARACTERS = 90; // Adjust the limit as needed  
     useEffect(() => {
         const fetchStudentData = async () => {
             try {
@@ -116,6 +115,7 @@ const Student = () => {
                 </p>
                 <p className="flex-1 break-words text-gray-600">
                   {studentData?.department || 'Loading...'}
+                  &nbsp;'{studentData?.sec || 'Loading...' }'
                 </p>
               </div>
               <div className="flex flex-wrap mb-2">
@@ -134,12 +134,28 @@ const Student = () => {
                   {studentData?.sem || 'Loading...'}
                 </p>
               </div>
+              <div className="flex flex-wrap mb-2">
+                <p className="w-32 font-normal mr-4 text-purple-800">
+                  <strong>CGPA:</strong>
+                </p>
+                <p className="flex-1 break-words text-gray-600">
+                  {studentData?.cgpa || 'Loading...'}
+                </p>
+              </div>
+              <div className="flex flex-wrap mb-2">
+                <p className="w-32 font-normal mr-4 text-purple-800">
+                  <strong>CGPA:</strong>
+                </p>
+                <p className="flex-1 break-words text-gray-600">
+                  {(((studentData.total_classes-studentData.absent_count) / studentData.total_classes) * 100).toFixed(1) || 'Loading...'}%
+                </p>
+              </div>
             </div>
     
             {/* OD Info Section */}
-            <div className="w-full lg:w-1/3 flex flex-col items-center lg:items-start text-lg font-bold text-purple-800">
-              <div>OD :</div>
-              <div>Attendance:</div>
+            <div className="w-full p-6 lg:w-1/3 flex flex-col items-center lg:items-start text-lg font-bold text-purple-800">
+              <div>OD : {studentData?.OD}</div>
+              <div>Permission : {studentData?.Permission}</div>
             </div>
           </div>
     

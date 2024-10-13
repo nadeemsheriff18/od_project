@@ -59,7 +59,7 @@ router.get('/fetchOD/:activeTab', async (req, res) => {
 // Update Astatus and OD/Permissions based on RegNo
 // Update Astatus and OD/Permissions based on RegNo (for Accept/Decline by HOD)
 router.patch('/updateStatus', async (req, res) => {
-  const { id, RegNo, status, live,role } = req.body;
+  const { id, RegNo, status, live,role,Type } = req.body;
 console.log(role);
   const client = await pool.connect();
   console.log(status);
@@ -70,18 +70,18 @@ console.log(role);
     await client.query('BEGIN');
 
     // Fetch the request type (Permission or On-Duty)
-    const fetchTypeQuery = `
-      SELECT "Type" FROM public."OdReqTable" 
-      WHERE "RegNo" = $1 AND id = $2;
-    `;
-    const fetchTypeResult = await client.query(fetchTypeQuery, [RegNo, id]);
+    // const fetchTypeQuery = `
+    //   SELECT "Type" FROM public."OdReqTable" 
+    //   WHERE "RegNo" = $1 AND id = $2;
+    // `;
+    // const fetchTypeResult = await client.query(fetchTypeQuery, [RegNo, id]);
 
-    if (fetchTypeResult.rowCount === 0) {
-      await client.query('ROLLBACK');
-      return res.status(404).json({ message: 'Record not found' });
-    }
+    // if (fetchTypeResult.rowCount === 0) {
+    //   await client.query('ROLLBACK');
+    //   return res.status(404).json({ message: 'Record not found' });
+    // }
 
-    const { Type } = fetchTypeResult.rows[0];
+    // const { Type } = fetchTypeResult.rows[0];
     // // AHOD
     // const updateQuery = `
     //   UPDATE public."OdReqTable" --------------------------------------

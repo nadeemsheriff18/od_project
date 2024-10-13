@@ -61,10 +61,19 @@ router.get('/:email', async (req, res) => {
     console.log(`Fetching data for email: ${email}`);
 
     try {
-        const query = 'SELECT * FROM student WHERE email = $1';
-        const values = [email];
-        
-        const result = await pool.query(query, values);
+        const query = `SELECT a.stud_name, a.rollno, a.department, a.cgpa, a.year, a.sem, a.sec,
+        COALESCE(c."OD", 0) AS "OD",
+    COALESCE(c."Permission", 0) AS "Permission",
+     COALESCE(d.total_classes, 0) AS total_classes,
+    COALESCE(d.absent_count, 0) AS absent_count
+                        FROM public."student" as a 
+                        LEFT JOIN public."ODsummary" AS c 
+                        ON a."rollno" = c."RegNo"
+                        LEFT JOIN public."student_attendance_summary" AS d
+                        ON a."rollno" = d."student_id"
+                        WHERE a.email = $1`;  
+         
+        const result = await pool.query(query, [email]);
         
         if (result.rows.length > 0) {
             res.status(200).json(result.rows[0]);
