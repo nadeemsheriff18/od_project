@@ -10,7 +10,7 @@ import History from './Components/History';
 import Student from './Components/Student';
 import LOGIN from './Components/LOGIN';
 import ODController from './Components/ODController';
-import Staff_login from './Components/Staff_login';
+import HOD_login from './Components/HOD_login';
 import AHOD_login from './Components/AHOD_login';
 //import AhodAccess from './Components/AhodAccess';
 import AHODDashboard from './Components/AHODDashboard';
@@ -28,16 +28,16 @@ root.render(
       <Route exact path="/">
         <LOGIN />
       </Route>
-        {/* <ProtectedRoute path="/student" role="student" component={Student} />
-      <ProtectedRoute path="/admin" role="admin" component={ODController} />   */}
-      <Route path="/student"><Student/>
+        <ProtectedRoute path="/student" role="student" component={Student} />
+      <ProtectedRoute path="/hod" role="hod" component={ODController} />
+      {/*<Route path="/student"><Student/>
       </Route>
-      <Route path="/admin"><ODController/>
+      <Route path="/hod"><ODController/>
       </Route>
       <Route path="/ahod"><AHODDashboard/>
       </Route>
-    
-      {/* <ProtectedRoute path="/ahod" role="ahod" component={AHODDashboard}/> */}
+    */}
+      <ProtectedRoute path="/ahod" role="ahod" component={AHODDashboard}/>
       
       
       <Route path="/adminControl"><AdminControl/>
@@ -46,8 +46,8 @@ root.render(
       <Route path="/history">
         <History />
       </Route>
-      <Route path="/stafflogin">
-        <Staff_login />
+      <Route path="/hodlogin">
+        <HOD_login/>
       </Route>
       <Route path="/ahodlogin">
         <AHOD_login />

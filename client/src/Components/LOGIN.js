@@ -1,11 +1,10 @@
-
-import Od_stu_LoginPage from "./Od_stu_LoginPage";
-import Odheader from "./Odheader";
+import LoginPage from "./LoginPage";
 function LOGIN() {
   return (
     <div className="relative">
       
-      <Od_stu_LoginPage />
+      <LoginPage role="Student" loginEndpoint="studentlogin" signupEndpoint="studentsignup" redirectPath="/student" />
+
     </div>
   );
 }

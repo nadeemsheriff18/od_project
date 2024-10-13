@@ -53,7 +53,7 @@ app.post('/changepwd', async (req,res)=>{
 
 
 //staff login
-app.post('/staffsignup', async (req,res)=>{
+app.post('/hodsignup', async (req,res)=>{
     const {email, password}= req.body
     const salt=bcrypt.genSaltSync(10)
     const hashedPassword=bcrypt.hashSync(password,salt)
@@ -62,7 +62,7 @@ app.post('/staffsignup', async (req,res)=>{
         const signUp = await pg.query(`INSERT INTO staff_login (email, hashed_password) VALUES($1, $2);`,
             [email, hashedPassword])
             const token =jwt.sign({email}, 'secret', {expiresIn: '1hr'})
-            res.json({email, token,"role": "admin"}) 
+            res.json({email, token,"role": "hod"}) 
     }
     catch(err){
         console.log(err)
@@ -72,7 +72,7 @@ app.post('/staffsignup', async (req,res)=>{
     }
 });
 
-app.post('/stafflogin',async (req,res)=>{
+app.post('/hodlogin',async (req,res)=>{
     const {email,password}= req.body
     try{
         const staff=await pg.query('SELECT * FROM staff_login Where email = $1', [email])
@@ -82,7 +82,7 @@ app.post('/stafflogin',async (req,res)=>{
             const success =await bcrypt.compare(password,staff.rows[0].hashed_password)
             const token =jwt.sign({email}, 'secret', {expiresIn: '1hr'})
             if(success){
-                res.json({'email': staff.rows[0].email,token,"role":"admin"})
+                res.json({'email': staff.rows[0].email,token,"role":"hod"})
             }
             else{
                 res.json({detail: 'Invalid password! '})
