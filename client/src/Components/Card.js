@@ -39,8 +39,8 @@ const Card = ({ data, live, onToggleExpand, isExpanded, onAccept, onDecline }) =
   return (
     <div className="mt-8 shadow-lg bg-violet-100 rounded-lg p-6 max-w-4xl w-auto cursor-pointer z-10" onClick={onToggleExpand}>
       <div className="flex">
-        <div className={`w-16 h-16 rounded-full flex items-center justify-center ${data.Type === "on-duty" ? 'text-purple-700 bg-purple-200' : 'text-blue-700 bg-blue-200'}`}>
-          <span className="text-md font-bold">{data.Type}</span>
+        <div className={`w-16 h-16 relative rounded-full flex items-center justify-center ${data.Type === "on-duty" ? 'text-purple-700 bg-purple-200' : 'text-blue-700 bg-blue-200'}`}>
+          <span className="text-md text-nowrap font-bold">{data.Type}</span>
           
         </div>
         
@@ -213,17 +213,17 @@ const Card = ({ data, live, onToggleExpand, isExpanded, onAccept, onDecline }) =
     <div className="flex flex-wrap justify-center items-center gap-2 mt-4">
       {!live && (
         <button
-          className="shadow-md text-white bg-green-500 font-medium py-2 px-4 rounded hover:bg-purple-200"
+          className="shadow-md text-white text-center bg-green-500 font-medium py-2 px-4 rounded hover:bg-green-600"
           onClick={(e) => {
             handleButtonClick(e);
             onAccept(data.id, data.RegNo,data.Type , live); // Pass live correctly
           }}
         >
-          Accept
+          {cookies.Role==="ahod"?"Forward":"Accept" }
         </button>
       )}
       <button
-        className="shadow-md text-white bg-red-600 font-medium py-2 px-4 rounded hover:bg-purple-200"
+        className="shadow-md text-white bg-red-500 font-medium py-2 px-4 rounded hover:bg-red-600"
         onClick={(e) => {
           handleButtonClick(e);
           onDecline(data.id, data.RegNo,data.Type. live); // Pass live correctly
