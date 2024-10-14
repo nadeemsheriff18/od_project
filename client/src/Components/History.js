@@ -40,10 +40,7 @@ const History = () => {
     setExpandedCardId((prevId) => (prevId === id ? null : id)); // Toggle between expand/collapse
   };
 
-  if (isLoading) return <div className='flex justify-center items-center min-h-screen'>
-    <Loader /> 
-    
-</div>;
+  
   if (isError) return <div>Error loading data: {error.message}</div>;
 
   return (
@@ -65,8 +62,9 @@ const History = () => {
 
         <div className='flex justify-center items-center flex-1 flex-wrap '>
         
- 
-          {requests.length === 0 ? (
+        {isLoading?(<div className='flex justify-center items-center mt-9 pt-9'>
+      <Loader />
+    </div>):(<>{requests.length === 0 ? (
             <p>No history found for roll number {rollno}.</p>
           ) : (
             <ul>
@@ -79,7 +77,8 @@ const History = () => {
                 />
               ))}
             </ul>
-          )}
+          )}</>)}
+          
         </div>
       </div>
     </>

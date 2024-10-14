@@ -144,12 +144,14 @@ function ODController() {
           </button>
         ))}
       </div>
-      {isLoading?(<><Loader/></>):(<>{activeTab === 'liveOd' && <div className='block mt-5 font-semibold text-xl'><h2>{cookies.Role==="ahod"?"Pending":"Live" } Count : {requests.length}</h2> </div>}
+      {isLoading?(<div className='flex justify-center items-center mt-9 pt-9'>
+      <Loader />
+    </div>):(<>{activeTab === 'liveOd' && <div className='block mt-5 font-semibold text-xl'><h2>{cookies.Role==="ahod"?"Pending":"Live" } Count : {requests.length}</h2> </div>}
       <div className="mt-4 flex flex-col items-center p-4">
         {activeTab === 'odRequest' && (
           <div className="w-full max-w-4xl overflow-x-hidden m-4">
             {requests.length === 0 ? (
-              <p>No OD requests available at the moment.</p>
+              <p className='text-center' >No Requests available at the moment.</p>
             ) : (
               requests.map((request) => (
                 <Card
@@ -170,7 +172,7 @@ function ODController() {
 
             {requests.length === 0 ? (
 
-              <p>No live OD requests available at the moment.</p>
+              <p className='text-center'>No {cookies.Role==="ahod"?"Pending":"Live" } Request available at the moment.</p>
 
 
             ) : (
