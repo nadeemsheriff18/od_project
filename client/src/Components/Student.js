@@ -147,7 +147,7 @@ const Student = () => {
                   <strong>CGPA:</strong>
                 </p>
                 <p className="flex-1 break-words text-gray-600">
-                  {(((studentData.total_classes-studentData.absent_count) / studentData.total_classes) * 100).toFixed(1) || 'Loading...'}%
+                  {(((studentData?.total_classes-studentData?.absent_count) / studentData?.total_classes) * 100).toFixed(1) || 'Loading...'}%
                 </p>
               </div>
             </div>
