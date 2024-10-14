@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import Card from './Card';
 import { useCookies } from 'react-cookie';
-
+import Loader from "./Loading";
 function ODController() {
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('odRequest');
@@ -11,6 +11,7 @@ function ODController() {
   const [subTab, setSubTab] = useState(1);
   const [subSections, setSubSections] = useState('A');
   const [cookies] = useCookies(['Role']);
+  
   // Fetch requests based on active tab
   const fetchRequests = async () => {
     const response = await axios.get(`/api/ODController/fetchOD/${activeTab}`, {
@@ -20,7 +21,7 @@ function ODController() {
   };
 
   // Use query for fetching requests
-  const { data: requests = [] } = useQuery({
+  const { data: requests = [],isLoading } = useQuery({
     queryKey: ['odRequests', activeTab, subTab, subSections],
     queryFn: fetchRequests,
   });
@@ -143,7 +144,7 @@ function ODController() {
           </button>
         ))}
       </div>
-      {activeTab === 'liveOd' && <div className='block mt-5 font-semibold text-xl'><h2>{cookies.Role==="ahod"?"Pending":"Live" } Count : {requests.length}</h2> </div>}
+      {isLoading?(<><Loader/></>):(<>{activeTab === 'liveOd' && <div className='block mt-5 font-semibold text-xl'><h2>{cookies.Role==="ahod"?"Pending":"Live" } Count : {requests.length}</h2> </div>}
       <div className="mt-4 flex flex-col items-center p-4">
         {activeTab === 'odRequest' && (
           <div className="w-full max-w-4xl overflow-x-hidden m-4">
@@ -191,7 +192,8 @@ function ODController() {
             )}
           </div>
         )}
-      </div>
+      </div></>)}
+      
     </div>
   );
 }

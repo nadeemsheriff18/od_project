@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import Card from './Card'; // Assuming you are using a Card component
+import Loader from './Loading';
 
 const History = () => {
   const { rollno } = useParams();
@@ -39,7 +40,10 @@ const History = () => {
     setExpandedCardId((prevId) => (prevId === id ? null : id)); // Toggle between expand/collapse
   };
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <div className='flex justify-center items-center min-h-screen'>
+    <Loader /> 
+    
+</div>;
   if (isError) return <div>Error loading data: {error.message}</div>;
 
   return (
