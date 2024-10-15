@@ -17,7 +17,7 @@ import AHODDashboard from './Components/AHODDashboard';
 import ForgotPassword from './Components/ForgotPassword';
 import ProtectedRoute from './Components/ProtectedRoute';
 import AdminControl from './Components/AdminControl';
-
+import ReportPage from './Components/ReportPage';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 const queryClient = new QueryClient();
 root.render(
@@ -39,7 +39,9 @@ root.render(
      */}
        <ProtectedRoute path="/ahod" role="ahod" component={ODController}/> 
       
-      
+       <Route path="/report">
+      <ReportPage />
+    </Route>
       <Route path="/adminControl"><AdminControl/>
       </Route>
 

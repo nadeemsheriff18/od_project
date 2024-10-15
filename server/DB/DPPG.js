@@ -23,18 +23,8 @@ const pool = new Pool({
             port: 5432,
          database: 'OD'
       });
-=======
-});
-*/}
-//Nadeem
-  const pool = new Pool({
-          user: 'postgres',
-          password: '160427',
-            host: 'localhost',
-             port: 5432,
-          database: 'OD'
-       });
->>>>>>> Stashed changes
+
+
 
 // Export the pool instance
 // const updateExpiredRecords = async () => {
