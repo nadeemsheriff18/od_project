@@ -154,6 +154,32 @@ console.log(updateStatusQuery);
   }
 });
 
+router.get('/report', async (req, res) => {
+  const { year, section } = req.query;
+
+  try {
+    const query = `
+      SELECT 
+        s.rollno AS "RollNumber",
+        s.stud_name AS "Name",
+        COALESCE(os."OD", 0) AS "OD",             
+        COALESCE(os."Permission", 0) AS "Permission" 
+      FROM public."student" AS s
+      LEFT JOIN public."ODsummary" AS os ON s.rollno = os."RegNo"
+      WHERE s.year = $1 AND s.sec = $2
+      ORDER BY s.rollno; 
+    `;
+
+    const result = await pool.query(query, [year, section]);
+    res.status(200).json(result.rows);
+  } catch (err) {
+    console.error('Error fetching report data:', err);
+    res.status(500).send('Internal server error');
+  }
+});
+
+
+
 // router.patch('/ahod/updateStatus', async (req, res) => {
 //   const { id, RegNo, status } = req.body; // status = 1 (accept), 0 (decline)
 

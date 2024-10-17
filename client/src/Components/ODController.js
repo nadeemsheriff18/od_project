@@ -4,6 +4,7 @@ import axios from 'axios';
 import Card from './Card';
 import { useCookies } from 'react-cookie';
 import Loader from "./Loading";
+import { useHistory } from 'react-router-dom';
 function ODController() {
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('odRequest');
@@ -11,7 +12,8 @@ function ODController() {
   const [subTab, setSubTab] = useState(1);
   const [subSections, setSubSections] = useState('A');
   const [cookies] = useCookies(['Role']);
-  
+  const history = useHistory(); 
+
   // Fetch requests based on active tab
   const fetchRequests = async () => {
     const response = await axios.get(`/api/ODController/fetchOD/${activeTab}`, {
@@ -89,6 +91,9 @@ function ODController() {
 
   const handleSubSectionChange = (section) => {
     setSubSections(section);
+  };
+  const handleGenerateReport = () => {
+    history.push('/report'); // Use history.push to navigate to the report page
   };
 
   const Years = [1, 2, 3, 4];
@@ -196,6 +201,13 @@ function ODController() {
         )}
       </div></>)}
       
+<button
+        className="mt-4 bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700"
+        onClick={handleGenerateReport}
+      >
+        Generate OD Report
+      </button>
+
     </div>
   );
 }

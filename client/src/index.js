@@ -12,6 +12,7 @@ import Student_Login from './Components/Student_Login';
 import ODController from './Components/ODController';
 import HOD_login from './Components/HOD_login';
 import AHOD_login from './Components/AHOD_login';
+import ReportPage from './Components/ReportPage';
 //import AhodAccess from './Components/AhodAccess';
 import AHODDashboard from './Components/AHODDashboard';
 import ForgotPassword from './Components/ForgotPassword';
@@ -41,6 +42,8 @@ root.render(
       
       
       <Route path="/adminControl"><AdminControl/>
+      </Route>
+      <Route path="/report"><ReportPage/>
       </Route>
 
       <Route path="/history/:rollno">
