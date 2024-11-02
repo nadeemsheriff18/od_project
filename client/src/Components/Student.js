@@ -17,6 +17,7 @@ const Student = () => {
     const [reason, setReason] = useState('');
     const [subject, setSubject] = useState('');
     const [cookies] = useCookies(['Email', 'AuthToken']);
+    const [attachedFile, setAttachedFile] = useState(null);
     const [studentData, setStudentData] = useState(null); // Access the cookies you set earlier
 
     const MAX_CHARACTERS = 90; // Adjust the limit as needed  
@@ -40,6 +41,12 @@ const Student = () => {
             fetchStudentData();
         }
     }, [cookies.Email]);
+    const handleFileChange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+          setAttachedFile(file);
+      }
+  };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -49,20 +56,26 @@ const Student = () => {
             return;
         }
 
-        const formData = {
-            RegNo: studentData.rollno,
-            requestType,
-            startDate,
-            endDate,
-            reason,
-            subject,
-            formattedDate,
-        };
+        const formData = new FormData();
+        formData.append('RegNo', studentData?.rollno);
+        formData.append('requestType', requestType);
+        formData.append('startDate', startDate);
+        formData.append('endDate', endDate);
+        formData.append('reason', reason);
+        formData.append('subject', subject);
+        formData.append('formattedDate', formattedDate);
+        if (attachedFile) {
+          formData.append('file', attachedFile);
+      }
 
         console.log(formData);
 
         try {
-            const response = await axios.post('/api/Student/submitOD', formData);
+            const response = await axios.post('/api/Student/submitOD', formData, {
+              headers: {
+                  'Content-Type': 'multipart/form-data',
+              },
+          });
 
             if (response.status === 200) {
                 alert('Request submitted successfully');
@@ -72,6 +85,7 @@ const Student = () => {
                 setEndDate('');
                 setReason('');
                 setSubject(''); // Reset subject field
+                setAttachedFile(null);
             } else {
                 alert('Failed to submit request');
             }
@@ -97,7 +111,7 @@ const Student = () => {
                 <p className="w-32 font-normal mr-4 text-purple-800">
                   <strong>Name:</strong>
                 </p>
-                <p className="flex-1 break-words text-gray-600">
+                <p className="flex-1 font-semibold break-words text-black">
                   {studentData?.stud_name || 'Loading...'}
                 </p>
               </div>
@@ -105,15 +119,15 @@ const Student = () => {
                 <p className="w-32 font-normal mr-4 text-purple-800">
                   <strong>Roll number:</strong>
                 </p>
-                <p className="flex-1 break-words text-gray-600">
+                <p className="flex-1 font-semibold break-words text-black">
                   {studentData?.rollno || 'Loading...'}
                 </p>
               </div>
               <div className="flex flex-wrap mb-2">
-                <p className="w-32 font-normal mr-4 text-purple-800">
+                <p className="w-32  font-normal mr-4 text-purple-800">
                   <strong>Department:</strong>
                 </p>
-                <p className="flex-1 break-words text-gray-600">
+                <p className="flex-1 font-semibold break-words text-black">
                   {studentData?.department || 'Loading...'}
                   &nbsp;'{studentData?.sec || 'Loading...' }'
                 </p>
@@ -122,7 +136,7 @@ const Student = () => {
                 <p className="w-32 font-normal mr-4 text-purple-800">
                   <strong>Year:</strong>
                 </p>
-                <p className="flex-1 break-words text-gray-600">
+                <p className="flex-1 font-semibold break-words text-black">
                   {studentData?.year || 'Loading...'}
                 </p>
               </div>
@@ -130,7 +144,7 @@ const Student = () => {
                 <p className="w-32 font-normal mr-4 text-purple-800">
                   <strong>Semester:</strong>
                 </p>
-                <p className="flex-1 break-words text-gray-600">
+                <p className="flex-1 font-semibold break-words text-black">
                   {studentData?.sem || 'Loading...'}
                 </p>
               </div>
@@ -138,15 +152,15 @@ const Student = () => {
                 <p className="w-32 font-normal mr-4 text-purple-800">
                   <strong>CGPA:</strong>
                 </p>
-                <p className="flex-1 break-words text-gray-600">
+                <p className="flex-1 font-semibold break-words text-black">
                   {studentData?.cgpa || 'Loading...'}
                 </p>
               </div>
               <div className="flex flex-wrap mb-2">
-                <p className="w-32 font-normal mr-4 text-purple-800">
-                  <strong>CGPA:</strong>
+                <p className="w-32  font-normal mr-4 text-purple-800">
+                  <strong>Attendance:</strong>
                 </p>
-                <p className="flex-1 break-words text-gray-600">
+                <p className="flex-1  font-semibold break-words text-black">
                   {(((studentData?.total_classes-studentData?.absent_count) / studentData?.total_classes) * 100).toFixed(1) || 'Loading...'}%
                 </p>
               </div>
@@ -217,10 +231,16 @@ const Student = () => {
                     />
                   </div>
                 </div>
-    
+
                 {/* Text Areas */}
-                <div className="flex flex-col items-center py-4 gap-4">
-                  <div className="w-full lg:w-1/2">
+                
+                <div className="flex flex-col items-center px-6 py-4 gap-4">
+                  <div className="w-full lg:w-2/3 flex flex-col" >
+                  <label for="fileUpload">Upload Document (optional):</label>
+                  <input className='mx-1 py-2' type="file" id="fileUpload" name="fileUpload" accept="application/pdf, image/*" onChange={handleFileChange}></input>
+                  </div>
+                  <div className="w-full lg:w-2/3">
+                    
                     <label htmlFor="subject">Subject:</label>
                     <p>{MAX_CHARACTERS - subject.length} characters remaining</p>
                     <textarea
@@ -233,7 +253,7 @@ const Student = () => {
                       maxLength={MAX_CHARACTERS}
                     />
                   </div>
-                  <div className="w-full lg:w-1/2">
+                  <div className="w-full lg:w-2/3">
                     <label htmlFor="reason">Reason:</label>
                     <textarea
                       required
@@ -244,6 +264,7 @@ const Student = () => {
                       onChange={(e) => setReason(e.target.value)}
                     />
                   </div>
+                  
                   <button
                     type="submit"
                     className="bg-violet-100 rounded-xl p-2 w-full lg:w-1/2"

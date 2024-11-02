@@ -5,23 +5,23 @@ import cron from 'node-cron';
 //!!!!!!!!! Unthula work pandra apo . entha comment out paniko !!!!!!!!!!!!!!!!!!!!!!!!
 //KABI
 
-// const pool = new Pool({
-//     user: "postgres",
-//     host: "localhost",
-//     database: "OD",
-//     password: "k1062005",
-//     port: 5432,          
+const pool = new Pool({
+    user: "postgres",
+    host: "localhost",
+    database: "OD",
+    password: "k1062005",
+    port: 5432,          
     
-// });
+});
 
 //Nadeem
-  const pool = new Pool({
-          user: 'postgres',
-          password: '160427',
-            host: 'localhost',
-             port: 5432,
-          database: 'OD'
-       });
+  // const pool = new Pool({
+  //         user: 'postgres',
+  //         password: '160427',
+  //           host: 'localhost',
+  //            port: 5432,
+  //         database: 'OD'
+  //      });
 
 // Export the pool instance
 // const updateExpiredRecords = async () => {
@@ -70,7 +70,7 @@ import cron from 'node-cron';
 //       console.error('Error updating expired records:', error);
 //   }
 // }
-const updateExpiredRecords = async () => {
+async function updateExpiredRecords() {
   try {
     // Query to update expired records
     const query = `
@@ -88,7 +88,7 @@ const updateExpiredRecords = async () => {
   } catch (error) {
     console.error('Error updating expired records:', error);
   }
-};
+}
 
 // Schedule the job to run every 10 seconds
 // cron.schedule('*/10 * * * * *', () => {

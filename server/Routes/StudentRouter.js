@@ -1,10 +1,11 @@
 import express from 'express';
 const router = express.Router();
 import pool from '../DB/DPPG.js'; // Ensure this file exports a configured pool
+import multer from "multer";
 
 router.post('/submitOD', async (req, res) => {
     const { RegNo, requestType, reason, endDate, subject, startDate , formattedDate  } = req.body;
-
+    console.log(RegNo, requestType, reason, endDate, subject, startDate , formattedDate );
     try {
         console.log(req.body)
         const query = `
