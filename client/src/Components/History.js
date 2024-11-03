@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import Card from './Card'; // Assuming you are using a Card component
 import Loader from './Loading';
 
 const History = () => {
+  const queryClient = useQueryClient();
   const { rollno } = useParams();
-  const date = new Date();
-  const today = date.toLocaleDateString();
+  // const date = new Date();
+  // const today = date.toLocaleDateString();
 
   // State to manage expanded card
   const [expandedCardId, setExpandedCardId] = useState(null);
@@ -23,6 +24,26 @@ const History = () => {
       console.error('Error fetching student history:', error);
       throw error; // Rethrow the error to be handled by the caller
     }
+  };
+
+
+  const mutation1 = useMutation({
+    mutationFn: async ({ id, RegNo }) => {
+      await axios.delete(`/api/Student/history/deleteReq`, {
+        params: { id },
+      });
+    },
+    onSuccess: () => {
+      // Invalidate queries to ensure fresh data
+      queryClient.invalidateQueries(['odRequests']);
+    },
+    onError: (error) => {
+      console.error('Error updating status:', error);
+    },
+  });
+
+  const handleDecline = async (id, RegNo) => {
+    mutation1.mutate({ id, RegNo });
   };
 
   // Use query for fetching requests
@@ -74,6 +95,7 @@ const History = () => {
                   data={request}
                   isExpanded={expandedCardId === request.id} // Pass the expand state to Card
                   onToggleExpand={() => handleToggleExpand(request.id)} // Toggle expand/collapse
+                  onDecline={handleDecline}
                 />
               ))}
             </ul>

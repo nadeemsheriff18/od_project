@@ -33,7 +33,8 @@ router.get('/fetchOD/:activeTab', async (req, res) => {
         COALESCE(c."OD", 0) AS "OD",
         COALESCE(c."Permission", 0) AS "Permission",
 		COALESCE(d.total_classes, 0) AS total_classes,
-    COALESCE(d.absent_count, 0) AS absent_count
+    COALESCE(d.absent_count, 0) AS absent_count,
+    a."FilePath"
       FROM public."OdReqTable" AS a
       JOIN public."student" AS b 
         ON a."RegNo" = b."rollno"

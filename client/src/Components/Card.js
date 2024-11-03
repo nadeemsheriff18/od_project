@@ -176,7 +176,7 @@ const Card = ({ data, live, onToggleExpand, isExpanded, onAccept, onDecline }) =
   </>
 ) : null}
             
-            
+           
             {renderLabelValue("Supervisor", supervisor)}
             {renderLabelValue("Req Date", formatDate(data.ReqDate))}
             {renderLabelValue(`${data.Type} Date`, `${formatDate(data.StartDate)} - ${formatDate(data.EndDate)}`)}
@@ -201,15 +201,80 @@ const Card = ({ data, live, onToggleExpand, isExpanded, onAccept, onDecline }) =
               <p className={`flex-1 font-semibold ${od >= 4 ? 'text-red-600' : 'text-green-600'}`}>
                 {od}
               </p>
+              
             </div>
+            <div className="flex flex-wrap mb-2 items-center"> 
+    
+</div>
+
+           
   </>
 ) : null}
             
-            
+            <p className="font-normal mr-4 text-purple-800">
+        
+        {data.FilePath ? (
+            <>
+                <a  onClick={(e) => {
+        handleButtonClick(e); // Call your button click handler
+    }}
+                    href={`http://localhost:3001/${data.FilePath}`} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="flex items-center space-x-1 hover:text-purple-700 transition-colors duration-200"
+                >
+                    <div className="w-6 h-6 group inline-block">
+                        <svg
+                            className="w-full h-full stroke-gray-500 group-hover:stroke-purple-800 transition-colors duration-200"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path 
+                                d="M15.0007 12C15.0007 13.6569 13.6576 15 12.0007 15C10.3439 15 9.00073 13.6569 9.00073 12C9.00073 10.3431 10.3439 9 12.0007 9C13.6576 9 15.0007 10.3431 15.0007 12Z" 
+                                strokeWidth="2" 
+                                strokeLinecap="round" 
+                                strokeLinejoin="round"
+                            />
+                            <path 
+                                d="M12.0012 5C7.52354 5 3.73326 7.94288 2.45898 12C3.73324 16.0571 7.52354 19 12.0012 19C16.4788 19 20.2691 16.0571 21.5434 12C20.2691 7.94291 16.4788 5 12.0012 5Z" 
+                                strokeWidth="2" 
+                                strokeLinecap="round" 
+                                strokeLinejoin="round"
+                            />
+                        </svg>
+                    </div>
+                    <span> View File</span>
+                </a>
+            </>
+        ) : (
+            <span>No file uploaded</span>
+        )}
+    </p>
           </div>
         </div>
         {
-  cookies.Role === "student" ? null : (
+  cookies.Role === "student" ? (<>
+  {data.AHOD_accept === 0 ? (<div className="flex flex-wrap justify-center items-center gap-2 mt-4">
+  <button
+    className="shadow-md text-white bg-red-500 font-medium py-2 px-4 rounded hover:bg-red-600"
+    onClick={(e) => {
+      const confirmDelete = window.confirm("Attention !! This actionn is Unrevertable . Are you sure you want to remove this item?");
+      handleButtonClick(e);
+      // If the user confirms, proceed with the decline action
+      if (confirmDelete) {
+          
+          onDecline(data.id, data.RegNo); // Pass the ID and RegNo correctly
+        
+      }
+    }}
+  >
+    {"Remove"}
+  </button>
+  </div>):null}
+  
+  
+  </>) : (
     <div className="flex flex-wrap justify-center items-center gap-2 mt-4">
       {!live && (
         <button
@@ -226,7 +291,7 @@ const Card = ({ data, live, onToggleExpand, isExpanded, onAccept, onDecline }) =
         className="shadow-md text-white bg-red-500 font-medium py-2 px-4 rounded hover:bg-red-600"
         onClick={(e) => {
           handleButtonClick(e);
-          onDecline(data.id, data.RegNo,data.Type. live); // Pass live correctly
+          onDecline(data.id,data.RegNo,data.Type,live); // Pass live correctly
          
         }}
       >

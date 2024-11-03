@@ -5,13 +5,21 @@ import jwt from "jsonwebtoken";
 import ODController from './Routes/ODcontrollerRouter.js';
 import Student from './Routes/StudentRouter.js';
 import pg from "./DB/DPPG.js";
+import path from 'path';
 import AdminControlRouter from './Routes/AdminControlRouter.js';
+import os from 'os';
+import { fileURLToPath } from 'url'; 
+import { dirname, join } from 'path';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 const app = express();
 const port = 3001;
 
 // Middlewares
 app.use(express.json());
 app.use(cors());
+const uploadsPath = path.join(os.homedir(), 'Desktop', 'uploads');
+app.use('/uploads', express.static(uploadsPath));
 
 // Routers
 app.use('/api/ODController/',ODController);

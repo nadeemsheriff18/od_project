@@ -237,7 +237,7 @@ const Student = () => {
                 <div className="flex flex-col items-center px-6 py-4 gap-4">
                   <div className="w-full lg:w-2/3 flex flex-col" >
                   <label for="fileUpload">Upload Document (optional):</label>
-                  <input className='mx-1 py-2' type="file" id="fileUpload" name="fileUpload" accept="application/pdf, image/*" onChange={handleFileChange}></input>
+                  <input className='mx-1 py-2 w-fit' type="file" id="fileUpload" name="fileUpload" accept="application/pdf, image/*" onChange={handleFileChange}></input>
                   </div>
                   <div className="w-full lg:w-2/3">
                     
