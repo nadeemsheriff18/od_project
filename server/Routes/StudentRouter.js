@@ -3,7 +3,7 @@ const router = express.Router();
 import pool from '../DB/DPPG.js'; // Ensure this file exports a configured pool
 import multer from "multer";
 
-import fs from 'fs';
+// import fs from 'fs';
 import path from 'path';
 import os from 'os';
 // Set up multer for file storage
@@ -102,6 +102,7 @@ router.post('/submitOD', upload.single('file'), async (req, res) => {
     a."AHOD_accept",
     COALESCE(c."OD", 0) AS "OD",
     COALESCE(c."Permission", 0) AS "Permission",
+    COALESCE(c."Leave", 0) AS "Leave",
     a."FilePath"
 FROM public."OdReqTable" AS a
 JOIN public."student" AS b 
@@ -157,7 +158,8 @@ router.get('/:email', async (req, res) => {
     try {
         const query = `SELECT a.stud_name, a.rollno, a.department, a.cgpa, a.year, a.sem, a.sec,
         COALESCE(c."OD", 0) AS "OD",
-    COALESCE(c."Permission", 0) AS "Permission",
+        COALESCE(c."Permission", 0) AS "Permission",
+        COALESCE(c."Leave", 0) AS "Leave",
      COALESCE(d.total_classes, 0) AS total_classes,
     COALESCE(d.absent_count, 0) AS absent_count
                         FROM public."student" as a 

@@ -8,6 +8,7 @@ import Loader from './Loading';
 
 const Student = () => {
     const now = new Date();
+    const MAX_FILE_SIZE = 2 * 1024 * 1024;
     const year = now.getFullYear();
     const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
     const day = String(now.getDate()).padStart(2, '0');
@@ -62,9 +63,14 @@ const Student = () => {
      
     const handleFileChange = (e) => {
       const file = e.target.files[0];
-      if (file) {
-          setAttachedFile(file);
+      if (file.size > MAX_FILE_SIZE) {
+        alert(`File size should not exceed 2 MB. Your file size is ${Math.round(file.size / 1024)} KB.`);
+        e.target.value = ''; // Clear the input if the file is too large
+      } else {
+        // Proceed with your logic for a valid file
+        setAttachedFile(file);
       }
+      
   };
 
     const handleSubmit = async (event) => {
@@ -100,8 +106,8 @@ const Student = () => {
                 alert('Request submitted successfully');
                 // Reset form or handle success
                 setRequestType('on-duty');
-                setStartDate('');
-                setEndDate('');
+                setStartDate('formattedDate');
+                setEndDate('formattedDate');
                 setReason('');
                 setSubject(''); // Reset subject field
                 setAttachedFile(null);
@@ -260,7 +266,7 @@ const Student = () => {
                 <div className="flex flex-col items-center px-6 py-4 gap-4">
                   <div className="w-full lg:w-2/3 flex flex-col" >
                   <label for="fileUpload">Upload Document (optional):</label>
-                  <input className='mx-1 py-2 w-fit' type="file" id="fileUpload" name="fileUpload" accept="application/pdf, image/*" onChange={handleFileChange}></input>
+                  <input className='mx-1 py-2 w-fit' type="file" id="fileUpload" required={requestType==="leave"?true:false} name="fileUpload" accept="application/pdf, image/*" onChange={handleFileChange}></input>
                   </div>
                   <div className="w-full lg:w-2/3">
                     

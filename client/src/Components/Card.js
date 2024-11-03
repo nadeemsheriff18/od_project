@@ -11,7 +11,7 @@ const Card = ({ data, live, onToggleExpand, isExpanded, onAccept, onDecline }) =
   const [cookies] = useCookies(['Role']);
   
   const supervisor = "CSBS HOD";
-  const od = data.Type === 'on-duty' ? data.OD : data.Permission;
+  const od = data.Type === 'on-duty' ? data.OD : data.Type==="leave"? data.Leave : data.Permission;
 
   const attendancePercentage = useMemo(() => {
     return (((data.total_classes-data.absent_count) / data.total_classes) * 100).toFixed(1);
@@ -39,7 +39,7 @@ const Card = ({ data, live, onToggleExpand, isExpanded, onAccept, onDecline }) =
   return (
     <div className="mt-8 shadow-lg bg-violet-100 rounded-lg p-6 max-w-4xl w-auto cursor-pointer z-10" onClick={onToggleExpand}>
       <div className="flex">
-        <div className={`w-16 h-16 relative rounded-full flex items-center justify-center ${data.Type === "on-duty" ? 'text-purple-700 bg-purple-200' : 'text-blue-700 bg-blue-200'}`}>
+        <div className={`w-16 h-16 relative rounded-full flex items-center justify-center ${data.Type === "on-duty" ? 'text-purple-700 bg-purple-200' : data.Type==="leave"?'text-orange-700 bg-red-200':'text-blue-700 bg-blue-200'}`}>
           <span className="text-md text-nowrap font-bold">{data.Type}</span>
           
         </div>

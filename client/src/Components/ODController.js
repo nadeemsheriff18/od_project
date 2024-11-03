@@ -13,6 +13,13 @@ function ODController() {
   const [subSections, setSubSections] = useState('A');
   const [cookies] = useCookies(['Role']);
   const history = useHistory(); 
+  const Years = [1, 2, 3, 4];
+  const yearSections = {
+    1: ['A', 'B', 'C'],
+    2: ['A', 'B'],
+    3: ['A', 'B'],
+    4: ['A'],
+  };
 
   // Fetch requests based on active tab
   const fetchRequests = async () => {
@@ -99,17 +106,17 @@ function ODController() {
     history.push('/report'); // Use history.push to navigate to the report page
   };
 
-  const Years = [1, 2, 3, 4];
-  const yearSections = {
-    1: ['A', 'B', 'C'],
-    2: ['A', 'B'],
-    3: ['A', 'B'],
-    4: ['A'],
-  };
+  
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen flex flex-col items-center overflow-x-hidden">
       <h2 className="text-2xl font-semibold text-purple-700 mt-2">REQUEST</h2>
+      <button
+        className="mt-4 bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700"
+        onClick={handleGenerateReport}
+      >
+        Generate OD Report
+      </button>
       <div className="mt-4 flex border-b border-gray-300">
         <button
           className={`py-2 px-4 text-lg font-medium ${activeTab === 'odRequest' ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-600'
@@ -204,12 +211,7 @@ function ODController() {
         )}
       </div></>)}
       
-<button
-        className="mt-4 bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700"
-        onClick={handleGenerateReport}
-      >
-        Generate OD Report
-      </button>
+
 
     </div>
   );

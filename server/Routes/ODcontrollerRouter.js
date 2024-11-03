@@ -32,6 +32,7 @@ router.get('/fetchOD/:activeTab', async (req, res) => {
         b.sec, 
         COALESCE(c."OD", 0) AS "OD",
         COALESCE(c."Permission", 0) AS "Permission",
+        COALESCE(c."Leave", 0) AS "Leave",
 		COALESCE(d.total_classes, 0) AS total_classes,
     COALESCE(d.absent_count, 0) AS absent_count,
     a."FilePath"
@@ -135,6 +136,13 @@ console.log(updateStatusQuery);
           WHERE "RegNo" = $1;
         `;
       }
+      else{
+        updateCountQuery = `
+          UPDATE public."ODsummary" 
+          SET "Leave" = "Leave" ${oper} 1 
+          WHERE "RegNo" = $1;
+        `;
+      }
     if (updateCountQuery) {
       const countResult = await client.query(updateCountQuery, [RegNo]);
       if (countResult.rowCount === 0) {
@@ -165,6 +173,7 @@ router.get('/report', async (req, res) => {
         s.stud_name AS "Name",
         COALESCE(os."OD", 0) AS "OD",             
         COALESCE(os."Permission", 0) AS "Permission" 
+        COALESCE(os."Leave", 0) AS "Leave" 
       FROM public."student" AS s
       LEFT JOIN public."ODsummary" AS os ON s.rollno = os."RegNo"
       WHERE s.year = $1 AND s.sec = $2
