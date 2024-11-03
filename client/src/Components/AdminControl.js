@@ -35,7 +35,23 @@ function AdminControl() {
             }
         }
     };
-
+    const handleResetStudents = async () => {
+        try {
+            const confirmed = window.confirm("Are you sure you want to reset all student data?");
+            if (!confirmed) return;
+    
+            const response = await axios.delete(`/api/upload/ResetPopulation`);
+            
+            if (response.status === 200) {
+                alert("Student data reset successfully.");
+            } else {
+                alert("Failed to reset student data.");
+            }
+        } catch (error) {
+            console.error("Error resetting student data:", error);
+            alert("An error occurred while trying to reset student data.");
+        }
+    };
     const handleSubmitUpload = async (atd, event, isAttendanceUpload) => {
         event.preventDefault();
 
@@ -89,6 +105,7 @@ function AdminControl() {
     };
 
     return (
+        <>
         <div className="flex mt-11 mb-11 flex-col min-h-screen">
             <h1 className="text-center mt-10 mb-10 text-2xl font-bold">UPLOAD ITEMS</h1>
             <form className="max-w-2xl mx-auto px-4" onSubmit={(event) => handleSubmitUpload('Initial', event, false)}>
@@ -134,6 +151,28 @@ function AdminControl() {
                 </button>
             </form>
         </div>
+        <div className="flex mt-5 mb-11 pb-11 flex-col bg-red-200 mx-36 rounded-xl">
+            <h1 className="text-center mt-10 mb-10 text-2xl font-bold">DANGER ZONE</h1>
+            <div className="max-w-2xl mx-auto px-4">
+                
+                <label className="block mb-2 text-base font-medium text-gray-900 dark:text-gray-900" htmlFor="students_file_upload">
+                    Reset all year attendence
+                </label>
+                
+                <button
+                    onClick={handleResetStudents}
+                    className="w-full py-2 mt-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                    Delete All Students
+                </button>
+            </div>
+            
+           
+        </div>
+
+        
+        </>
+        
     );
 }
 

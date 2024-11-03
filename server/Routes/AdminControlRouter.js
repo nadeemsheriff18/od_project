@@ -10,6 +10,17 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 // Route to handle the first-time upload (Insert students)
+router.delete('/ResetPopulation', async (req, res) => {
+    try {
+        const result = await pool.query(`
+            DELETE FROM public.student_attendance_summary 
+        `);
+        res.status(200).send({ message: 'Rows deleted successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: 'Error deleting rows.' });
+    }
+});
 router.post('/uploadInitial', upload.single('file'), async (req, res) => {
     const buffer = req.file.buffer;
 
@@ -84,7 +95,7 @@ router.post('/uploadExcel', upload.single('file'), async (req, res) => {
                 WHEN student_id = ANY($1::int[]) THEN 1
                 ELSE 0
             END
-    WHERE student_id = ANY($1::int[]) OR student_id != ANY($1::int[]); ;
+    WHERE student_id = ANY($1::int[]) OR student_id != ANY($1::int[]); 
 `;
 
         // Execute the update query
