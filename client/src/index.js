@@ -46,9 +46,9 @@ root.render(
       <Route path="/report"><ReportPage/>
       </Route>
 
-      <Route path="/history/:rollno">
-        <History />
-      </Route>
+      <ProtectedRoute path="/history/:rollno" role="student" component={History}/>
+        
+     
       <Route path="/stafflogin">
         <HOD_login />
       </Route>
