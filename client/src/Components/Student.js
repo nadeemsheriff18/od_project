@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import  { useMemo } from 'react';
+// import  { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useCookies } from 'react-cookie';
+import { useQuery } from '@tanstack/react-query';
+import Loader from './Loading';
 
 const Student = () => {
     const now = new Date();
@@ -12,35 +14,52 @@ const Student = () => {
     const formattedDate = `${year}-${month}-${day}`;
 
     const [requestType, setRequestType] = useState('on-duty');
-    const [startDate, setStartDate] = useState('');
-    const [endDate, setEndDate] = useState('');
+    const [startDate, setStartDate] = useState(formattedDate);
+    const [endDate, setEndDate] = useState(formattedDate);
     const [reason, setReason] = useState('');
     const [subject, setSubject] = useState('');
     const [cookies] = useCookies(['Email', 'AuthToken']);
     const [attachedFile, setAttachedFile] = useState(null);
-    const [studentData, setStudentData] = useState(null); // Access the cookies you set earlier
+    // const [studentData, setStudentData] = useState(null); // Access the cookies you set earlier
 
     const MAX_CHARACTERS = 90; // Adjust the limit as needed  
-    useEffect(() => {
-        const fetchStudentData = async () => {
-            try {
-                console.log(`Fetching data from URL: /api/Student/${cookies.Email}`);
-                const response = await axios.get(`/api/Student/${cookies.Email}`);
-                console.log('Response:', response.data);
-                if (response.status === 200) {
-                    setStudentData(response.data);
-                } else {
-                    console.error('Failed to fetch student data');
-                }
-            } catch (error) {
-                console.error('Error fetching student data:', error);
-            }
-        };
+    // useEffect(() => {
+    //     const fetchStudentData = async () => {
+    //         try {
+    //             console.log(`Fetching data from URL: /api/Student/${cookies.Email}`);
+    //             const response = await axios.get(`/api/Student/${cookies.Email}`);
+    //             console.log('Response:', response.data);
+    //             if (response.status === 200) {
+    //                 setStudentData(response.data);
+    //             } else {
+    //                 console.error('Failed to fetch student data');
+    //             }
+    //         } catch (error) {
+    //             console.error('Error fetching student data:', error);
+    //         }
+    //     };
 
-        if (cookies.Email) {
-            fetchStudentData();
-        }
-    }, [cookies.Email]);
+    //     if (cookies.Email) {
+    //         fetchStudentData();
+    //     }
+    // }, [cookies.Email]);
+    const fetchStudentData = async (email) => {
+      const response = await axios.get(`/api/Student/${email}`);
+      if (response.status !== 200) {
+          throw new Error('Failed to fetch student data');
+      }
+      return response.data;
+  };
+  const { data: studentData = [], isLoading, isError, error } = useQuery({
+    queryKey: ['studentData', cookies.Email], // Cache based on email
+    queryFn: () => fetchStudentData(cookies.Email),
+    enabled: Boolean(cookies.Email), // Only run the query if the email is available
+    staleTime: 300000, // Cache data for 5 minutes
+    cacheTime: 900000, // Keep cached data for 15 minutes
+    refetchOnWindowFocus: false, // Disable refetch on window focus
+});
+    
+     
     const handleFileChange = (e) => {
       const file = e.target.files[0];
       if (file) {
@@ -94,9 +113,10 @@ const Student = () => {
             alert('An error occurred while submitting the request');
         }
     };
-
+    if (isError) return <div>Error loading data: {error.message}</div>;
     return (
         <div className="w-full min-h-screen bg-violet-100 pt-24">
+          
           {/* Main container for the profile and OD info */}
           <div className="flex flex-col lg:flex-row justify-evenly items-center pt-7 px-6 lg:px-24">
             
@@ -104,10 +124,12 @@ const Student = () => {
             <div className="w-full lg:w-1/3 mb-6 lg:mb-0">
               <div className="text-lg font-bold text-purple-800">OD :</div>
             </div>
-    
+            
             {/* Student Information */}
             <div className="flex flex-col gap-4 rounded-xl bg-white p-6 shadow-xl font-sans text-sm md:text-lg text-gray-700 w-full lg:w-1/3">
-              <div className="flex flex-wrap mb-2">
+            {isLoading?(<div className='flex justify-center items-center mt-9 pt-9'>
+      <Loader />
+    </div>):(<> <div className="flex flex-wrap mb-2">
                 <p className="w-32 font-normal mr-4 text-purple-800">
                   <strong>Name:</strong>
                 </p>
@@ -163,12 +185,13 @@ const Student = () => {
                 <p className="flex-1  font-semibold break-words text-black">
                   {(((studentData?.total_classes-studentData?.absent_count) / studentData?.total_classes) * 100).toFixed(1) || 'Loading...'}%
                 </p>
-              </div>
+              </div></>)}
+             
             </div>
     
             {/* OD Info Section */}
             <div className="w-full p-6 lg:w-1/3 flex flex-col items-center lg:items-start text-lg font-bold text-purple-800">
-              <div>OD : {studentData?.OD}</div>
+              <div>OD : {studentData?.OD }</div>
               <div>Permission : {studentData?.Permission}</div>
             </div>
           </div>

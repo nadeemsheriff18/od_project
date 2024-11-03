@@ -26,6 +26,9 @@ function ODController() {
   const { data: requests = [],isLoading } = useQuery({
     queryKey: ['odRequests', activeTab, subTab, subSections],
     queryFn: fetchRequests,
+    staleTime: 300000, // Cache data for 5 minutes
+    cacheTime: 900000, // Keep cached data for 15 minutes
+    refetchOnWindowFocus: true,
   });
 
   // Use mutation for accepting requests
