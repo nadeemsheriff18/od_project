@@ -249,6 +249,27 @@ router.get('/report', async (req, res) => {
 
 // Update AHOD approval status
 
+//staff
+// In ODController.js
+
+router.get('/currentODPermission', async (req, res) => {
+  try {
+    const query = `
+      SELECT 
+        "RegNo", 
+        "Reason"  
+      FROM public."OdReqTable" 
+      WHERE "Astatus" = 1; -- Only fetch records where Astatus is 1 (active OD/Permission)
+    `;
+
+    const result = await pool.query(query);
+    res.status(200).json(result.rows);
+  } catch (err) {
+    console.error('Error fetching current OD/Permission data:', err);
+    res.status(500).send('Internal server error');
+  }
+});
+
 
 
 

@@ -18,13 +18,16 @@ import AHODDashboard from './Components/AHODDashboard';
 import ForgotPassword from './Components/ForgotPassword';
 import ProtectedRoute from './Components/ProtectedRoute';
 import AdminControl from './Components/AdminControl';
+import Staff_login from './Components/Staff_login';
+import Staff from './Components/Staff';
+import Navbar from './Components/Navbar';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 const queryClient = new QueryClient();
 root.render(
   <QueryClientProvider client={queryClient}>
   <BrowserRouter>
-    <Odheader />
+    <Navbar />
     <Switch>
       <Route exact path="/">
         <Student_Login />
@@ -40,6 +43,7 @@ root.render(
      */}
        <ProtectedRoute path="/ahod" role="ahod" component={ODController}/> 
       
+       <ProtectedRoute path="/staff" role="staff" component={Staff}/>
       
       <Route path="/adminControl"><AdminControl/>
       </Route>
@@ -51,6 +55,9 @@ root.render(
      
       <Route path="/stafflogin">
         <HOD_login />
+      </Route>
+      <Route path="/classStafflogin">
+        <Staff_login />
       </Route>
       <Route path="/ahodlogin">
         <AHOD_login />
