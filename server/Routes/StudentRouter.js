@@ -170,6 +170,7 @@ router.get('/:email', async (req, res) => {
                         WHERE a.email = $1`;  
          
         const result = await pool.query(query, [email]);
+        console.log(result.rows)
         
         if (result.rows.length > 0) {
             res.status(200).json(result.rows[0]);
