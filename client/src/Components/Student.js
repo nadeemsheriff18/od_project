@@ -189,14 +189,7 @@ const Student = () => {
                   <strong>Attendance:</strong>
                 </p>
                 <p className="flex-1  font-semibold break-words text-black">
-{studentData?.total_classes>=0
-  ? (studentData.total_classes === 0 
-     ? "100" 
-     : (((studentData.total_classes - studentData.absent_count) / studentData.total_classes) * 100).toFixed(1)
-    ) 
-  : "loading"
-}
-                  %
+                  {(((studentData?.total_classes-studentData?.absent_count) / studentData?.total_classes) * 100).toFixed(1) || 'Loading...'}%
                 </p>
               </div></>)}
              
