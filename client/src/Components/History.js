@@ -4,10 +4,12 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import Card from './Card'; // Assuming you are using a Card component
 import Loader from './Loading';
-
+import { Route, Redirect } from 'react-router-dom';
+import { useCookies } from 'react-cookie';
 const History = () => {
   const queryClient = useQueryClient();
   const { rollno } = useParams();
+  const [cookies] = useCookies(['Role','Email']);
   // const date = new Date();
   // const today = date.toLocaleDateString();
 
@@ -66,7 +68,7 @@ const History = () => {
 
   return (
     <>
-      <div className="flex-col mt-20 px-6 ">
+    {cookies.Email===`${rollno}@gmail.com`? (<div className="flex-col mt-20 px-6 ">
       <div className="flex flex-col justify-center items-center text-center">
   <h2 className="font-bold text-3xl">History</h2>
     <div className='mt-6'>
@@ -102,7 +104,8 @@ const History = () => {
           )}</>)}
           
         </div>
-      </div>
+      </div>):(<Redirect to="/access-denied" />) }
+      
     </>
   );
 };
