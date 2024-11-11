@@ -39,16 +39,17 @@ root.render(
       </Route>
      */}
        <ProtectedRoute path="/ahod" role="ahod" component={ODController}/> 
+       <ProtectedRoute path="/adminControl" role="DC" component={AdminControl}/> 
+       <ProtectedRoute path="/history/:rollno" role="student" component={History}/> 
       
-      
-      <Route path="/adminControl"><AdminControl/>
-      </Route>
+      {/* <Route path="/adminControl"><AdminControl/>
+      </Route> */}
       <Route path="/report"><ReportPage/>
       </Route>
 
-      <Route path="/history/:rollno">
+      {/* <Route path="/history/:rollno">
         <History />
-      </Route>
+      </Route> */}
       <Route path="/stafflogin">
         <HOD_login />
       </Route>
