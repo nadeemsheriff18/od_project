@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 const ReportPage = () => {
   const [year, setYear] = useState('');
@@ -16,13 +18,34 @@ const ReportPage = () => {
   };
 
   const { data: reportData = [], isLoading } = useQuery({
-    queryKey: ['reportData', year, section], // Updated to object form
+    queryKey: ['reportData', year, section],
     queryFn: fetchReportData,
     enabled: !!year && !!section // only fetch when both year and section are selected
   });
 
   const handleGenerateReport = () => {
-    // This will trigger the fetch
+    // Triggers the fetch
+  };
+
+  const handleDownloadPDF = () => {
+    const doc = new jsPDF();
+    doc.text(`OD/Permission Report - Year ${year}, Section ${section}`, 14, 10);
+
+    const columns = ['Roll Number', 'Name', 'OD Count', 'Permission Count'];
+    const rows = reportData.map(student => [
+      student.RollNumber,
+      student.Name,
+      student.OD,
+      student.Permission
+    ]);
+
+    doc.autoTable({
+      head: [columns],
+      body: rows,
+      startY: 20,
+    });
+
+    doc.save(`Report_Year${year}_Section${section}.pdf`);
   };
 
   return (
@@ -40,10 +63,12 @@ const ReportPage = () => {
           <option value="">Select Section</option>
           <option value="A">A</option>
           <option value="B">B</option>
-          
         </select>
         <button onClick={handleGenerateReport} className="ml-4 bg-purple-500 text-white px-4 py-2 rounded">
           Generate Report
+        </button>
+        <button onClick={handleDownloadPDF} className="ml-4 bg-green-500 text-white px-4 py-2 rounded">
+          Download PDF
         </button>
       </div>
 
@@ -60,16 +85,14 @@ const ReportPage = () => {
             </tr>
           </thead>
           <tbody>
-          
-{reportData.map((student) => (
-  <tr key={student.RollNumber}>
-    <td className="border border-gray-300 p-2">{student.RollNumber}</td>
-    <td className="border border-gray-300 p-2">{student.Name}</td>
-    <td className="border border-gray-300 p-2">{student.OD}</td>
-    <td className="border border-gray-300 p-2">{student.Permission}</td>
-  </tr>
-))}
-
+            {reportData.map((student) => (
+              <tr key={student.RollNumber}>
+                <td className="border border-gray-300 p-2">{student.RollNumber}</td>
+                <td className="border border-gray-300 p-2">{student.Name}</td>
+                <td className="border border-gray-300 p-2">{student.OD}</td>
+                <td className="border border-gray-300 p-2">{student.Permission}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       )}
