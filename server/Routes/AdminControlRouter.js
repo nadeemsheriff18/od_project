@@ -2,13 +2,24 @@ import express from 'express';
 import multer from 'multer';
 import xlsx from 'xlsx';
 import pool from "../DB/DPPG.js"; // PostgreSQL connection pool
+import fs from 'fs';
+import path from 'path';
+const __dirname =  path.resolve('C:/Users/KABELAN/Documents/GitHub/od_project/server');
+console.log(`---------------------${__dirname}`)
+const jsonFilePath = path.join(__dirname, 'Config', 'sections.json');
+console.log(`---------------------${jsonFilePath}`)
 
 const router = express.Router();
 
 // Configure multer to store uploaded files in memory
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
-
+// const yearSections = {
+//     1: ['A', 'B', 'C'],
+//     2: ['A', 'B'],
+//     3: ['A', 'B'],
+//     4: ['A'],
+//   };
 // Route to handle the first-time upload (Insert students)
 router.delete('/ResetPopulation', async (req, res) => {
     try {
@@ -21,6 +32,89 @@ router.delete('/ResetPopulation', async (req, res) => {
         res.status(500).send({ message: 'Error deleting rows.' });
     }
 });
+const readJsonFile = () => {
+    const data = fs.readFileSync(jsonFilePath, 'utf-8');
+    return JSON.parse(data);
+  };
+  
+  // Helper function to write JSON data
+  const writeJsonFile = (data) => {
+    fs.writeFileSync(jsonFilePath, JSON.stringify(data, null, 2), 'utf-8');
+  };
+// Fetching years and sections
+router.get('/fetchingSections', (req, res) => {
+    try {
+      const yearSections = readJsonFile();
+      res.status(200).json({ Years: yearSections });
+    } catch (error) {
+      console.error('Error reading the file:', error);
+      res.status(500).json({ message: 'Error fetching sections' });
+    }
+  });
+  
+  // Adding a section to a specific year
+  router.post('/sections', (req, res) => {
+    const { year, section } = req.body;
+  
+    if (!year || !section) {
+      return res.status(400).json({ message: 'Year and section are required' });
+    }
+  
+    try {
+      const yearSections = readJsonFile();
+  
+      // If the year doesn't exist, initialize it with an empty array
+      if (!yearSections[year]) {
+        yearSections[year] = [];
+      }
+  
+      // Check if the section already exists in the array for that year
+      if (!yearSections[year].includes(section)) {
+        yearSections[year].push(section);
+        yearSections[year].sort();
+        writeJsonFile(yearSections);
+        res.status(200).json({ message: 'Section added successfully' });
+      } else if(yearSections[year].includes(section)) {
+        console.log("ASDASDADDASDAS")
+        res.status(409).json({ message: 'Section already exists for this year' });
+      }
+    } catch (error) {
+      console.error('Error adding section:', error);
+      res.status(500).json({ message: 'Error adding section' });
+    }
+  });
+  
+  // Removing a section from a specific year
+  router.delete('/sectionsdel', (req, res) => {
+    const { year, section } = req.body;
+  
+    if (!year || !section) {
+      return res.status(400).json({ message: 'Year and section are required' });
+    }
+  
+    try {
+      const yearSections = readJsonFile();
+  
+      // Check if the year exists and has the specified section
+      if (yearSections[year] && yearSections[year].includes(section)) {
+        // Remove the section from the array
+        yearSections[year] = yearSections[year].filter(sec => sec !== section);
+  
+        // If no sections remain, delete the year entry
+        if (yearSections[year].length === 0) {
+          delete yearSections[year];
+        }
+  
+        writeJsonFile(yearSections);
+        res.status(200).json({ message: 'Section removed successfully' });
+      } else {
+        res.status(404).json({ message: 'Section not found for this year' });
+      }
+    } catch (error) {
+      console.error('Error removing section:', error);
+      res.status(500).json({ message: 'Error removing section' });
+    }
+  });
 router.post('/uploadInitial', upload.single('file'), async (req, res) => {
     const buffer = req.file.buffer;
 

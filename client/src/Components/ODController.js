@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import Card from './Card';
@@ -11,21 +11,27 @@ function ODController() {
   const [expandedCardId, setExpandedCardId] = useState(null);
   const [subTab, setSubTab] = useState(1);
   const [subSections, setSubSections] = useState('A');
+  const [yearSections,setYearSections] = useState(null);
   const [cookies] = useCookies(['Role']);
   const history = useHistory(); 
   const Years = [1, 2, 3, 4];
-  const yearSections = {
-    1: ['A', 'B', 'C'],
-    2: ['A', 'B'],
-    3: ['A', 'B'],
-    4: ['A'],
-  };
-
+  useEffect(() => {
+    const loadSections = async () => {
+      await fetchSections();
+    };
+    loadSections();
+  }, []);
+  async function fetchSections() {
+    const response = await axios.get(`/api/upload/fetchingSections`);
+    console.log(response.data.Years);
+    setYearSections(response.data.Years)
+}
   // Fetch requests based on active tab
   const fetchRequests = async () => {
     const response = await axios.get(`/api/ODController/fetchOD/${activeTab}`, {
       params: { year: subTab, section: subSections ,role: cookies.Role},
     });
+    
     return response.data;
   };
 
@@ -133,32 +139,32 @@ function ODController() {
           {cookies.Role==="ahod"?"Forwarded to HOD":"LIVE"}
         </button>
       </div>
+      {yearSections === null?(<div>Loading...</div>):(<><div className="flex">
 
-      <div className="flex">
-
-        {Years.map((year) => (
-          <button
-            key={year}
-            className={`py-2 px-4 text-lg font-medium ${subTab === year ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-600'
-              }`}
-            onClick={() => handleSubTabChange(year)}
-          >
-            {year} year
-          </button>
-        ))}
-      </div>
-      <div className="flex">
-        {yearSections[subTab].map((section) => (
-          <button
-            key={section}
-            className={`py-2 px-4 text-lg font-medium ${subSections === section ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-600'
-              }`}
-            onClick={() => handleSubSectionChange(section)}
-          >
-            {section}
-          </button>
-        ))}
-      </div>
+    {Years.map((year) => (
+  <button
+    key={year}
+    className={`py-2 px-4 text-lg font-medium ${subTab === year ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-600'
+      }`}
+    onClick={() => handleSubTabChange(year)}
+  >
+    {year} year
+  </button>
+))}
+</div>
+<div className="flex">
+{yearSections[subTab].map((section) => (
+  <button
+    key={section}
+    className={`py-2 px-4 text-lg font-medium ${subSections === section ? 'border-b-2 border-purple-500 text-purple-700' : 'text-gray-600'
+      }`}
+    onClick={() => handleSubSectionChange(section)}
+  >
+    {section}
+  </button>
+))}
+</div></>)}  
+      
       {isLoading?(<div className='flex justify-center items-center mt-9 pt-9'>
       <Loader />
     </div>):(<>{activeTab === 'liveOd' && <div className='block mt-5 font-semibold text-xl'><h2>{cookies.Role==="ahod"?"Pending":"Live" } Count : {requests.length}</h2> </div>}

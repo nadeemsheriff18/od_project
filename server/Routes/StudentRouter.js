@@ -2,10 +2,12 @@ import express from 'express';
 const router = express.Router();
 import pool from '../DB/DPPG.js'; // Ensure this file exports a configured pool
 import multer from "multer";
-
+import { fileURLToPath } from 'url'; 
 // import fs from 'fs';
 import path from 'path';
 import os from 'os';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 // Set up multer for file storage
 // const storage = multer.diskStorage({
 //     destination: (req, file, cb) => {
@@ -32,7 +34,9 @@ import os from 'os';
 // });
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        const uploadPath = path.join(os.homedir(), 'Desktop', 'uploads');
+        // const uploadPath = path.join(os.homedir(), 'Desktop', 'uploads');
+        console.log(__dirname);
+        const uploadPath = path.join(__dirname, '../uploads');
         cb(null, uploadPath); // Specify your uploads directory on the desktop
     },
     filename: (req, file, cb) => {

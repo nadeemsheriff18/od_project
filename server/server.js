@@ -18,7 +18,9 @@ const port = 3001;
 // Middlewares
 app.use(express.json());
 app.use(cors());
-const uploadsPath = path.join(os.homedir(), 'Desktop', 'uploads');
+// const uploadsPath = path.join(os.homedir(), 'Desktop', 'uploads');
+const uploadsPath = path.join(__dirname, '/uploads');
+console.log(uploadsPath);
 app.use('/uploads', express.static(uploadsPath));
 
 // Routers
