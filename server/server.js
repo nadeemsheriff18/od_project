@@ -29,10 +29,6 @@ app.use('/api/upload/',AdminControlRouter);
 // pg.connect()
 
 //forgot password
-const generateToken = (email, role) => {
-    return jwt.sign({ email, role }, 'secret', { expiresIn: '1hr' });
-  };
-  
 app.post('/changepwd', async (req,res)=>{
     const {email, password}= req.body
     const salt=bcrypt.genSaltSync(10)
@@ -53,25 +49,6 @@ app.post('/changepwd', async (req,res)=>{
 
 
 //HOD login
-app.post('/staffsignup', async (req,res)=>{
-    const {email, password}= req.body
-    const salt=bcrypt.genSaltSync(10)
-    const hashedPassword=bcrypt.hashSync(password,salt)
-
-    try{
-        const signUp = await pg.query(`INSERT INTO staff_login (email, hashed_password) VALUES($1, $2);`,
-            [email, hashedPassword])
-            const token =jwt.sign({email}, 'secret', {expiresIn: '1hr'})
-            res.json({email, token,"role": "admin"}) 
-    }
-    catch(err){
-        console.log(err)
-        if (err) {
-            res.json({detail:err.detail})
-        }
-    }
-});
-
 app.post('/stafflogin',async (req,res)=>{
     const {email,password}= req.body
     try{
@@ -80,7 +57,7 @@ app.post('/stafflogin',async (req,res)=>{
         if(!staff.rows.length) return res.json({detail: 'User does not exist! '})
 
             const success =await bcrypt.compare(password,staff.rows[0].hashed_password)
-            const token =jwt.sign({email}, 'secret', {expiresIn: '1hr'})
+            const token =jwt.sign({email}, 'secret', {expiresIn: '30m'})
             if(success){
                 res.json({'email': staff.rows[0].email,token,"role":"admin"})
             }
@@ -94,25 +71,6 @@ app.post('/stafflogin',async (req,res)=>{
 })
 
 //staff login
-app.post('/classStaffsignup', async (req,res)=>{
-    const {email, password}= req.body
-    const salt=bcrypt.genSaltSync(10)
-    const hashedPassword=bcrypt.hashSync(password,salt)
-
-    try{
-        const signUp = await pg.query(`INSERT INTO ClassStaff_login (username, password) VALUES($1, $2);`,
-            [email, hashedPassword])
-            const token =jwt.sign({email}, 'secret', {expiresIn: '1hr'})
-            res.json({email, token,"role": "staff"}) 
-    }
-    catch(err){
-        console.log(err)
-        if (err) {
-            res.json({detail:err.detail})
-        }
-    }
-});
-
 app.post('/classStafflogin',async (req,res)=>{
     const {email,password}= req.body
     try{
@@ -121,7 +79,7 @@ app.post('/classStafflogin',async (req,res)=>{
         if(!staff.rows.length) return res.json({detail: 'User does not exist! '})
 
             const success =await bcrypt.compare(password,staff.rows[0].password)
-            const token =jwt.sign({email}, 'secret', {expiresIn: '1hr'})
+            const token =jwt.sign({email}, 'secret', {expiresIn: '30m'})
             if(success){
                 res.json({'email': staff.rows[0].username,token,"role":"staff"})
             }
@@ -135,29 +93,6 @@ app.post('/classStafflogin',async (req,res)=>{
 })
 
 //student login
-app.post('/studentsignup', async (req,res)=>{
-    const {email, password}= req.body
-    const salt=bcrypt.genSaltSync(10)
-    const hashedPassword=bcrypt.hashSync(password,salt)
-
-    try{
-        const signUp = await pg.query(`INSERT INTO student_login (email, hashed_pwd) VALUES($1, $2);`,
-            [email, hashedPassword])
-        
-            const token =jwt.sign({email}, 'secret', {expiresIn: '1hr'})
-
-            res.json({email, token,"role": "student"})
-        
-    }
-    catch(err){
-        console.log(err)
-
-        if (err) {
-            res.json({detail:err.detail})
-        }
-    }
-});
-
 app.post('/studentlogin',async (req,res)=>{
     const {email,password}= req.body
     try{
@@ -166,7 +101,7 @@ app.post('/studentlogin',async (req,res)=>{
         if(!student.rows.length) return res.json({detail: 'User does not exist! '})
 
             const success =await bcrypt.compare(password,student.rows[0].hashed_pwd)
-            const token =jwt.sign({email}, 'secret', {expiresIn: '1hr'})
+            const token =jwt.sign({email}, 'secret', {expiresIn: '30m'})
             if(success){
                 res.json({'email': student.rows[0].email,token,"role": "student"})
             }
@@ -183,29 +118,6 @@ app.post('/studentlogin',async (req,res)=>{
  });
 
  //AHOD login
- app.post('/ahodsignup', async (req,res)=>{
-    const {email, password}= req.body
-    const salt=bcrypt.genSaltSync(10)
-    const hashedPassword=bcrypt.hashSync(password,salt)
-
-    try{
-        const signUp = await pg.query(`INSERT INTO ahod_login (email, hashed_pwd) VALUES($1, $2);`,
-            [email, hashedPassword])
-        
-            const token =jwt.sign({email}, 'secret', {expiresIn: '1hr'})
-
-            res.json({email, token,"role": "ahod"})
-        
-    }
-    catch(err){
-        console.log(err)
-
-        if (err) {
-            res.json({detail:err.detail})
-        }
-    }
-});
-
 app.post('/ahodlogin',async (req,res)=>{
     const {email,password}= req.body
     try{
@@ -214,7 +126,7 @@ app.post('/ahodlogin',async (req,res)=>{
         if(!ahod.rows.length) return res.json({detail: 'User does not exist! '})
 
             const success =await bcrypt.compare(password,ahod.rows[0].hashed_pwd)
-            const token =jwt.sign({email}, 'secret', {expiresIn: '1hr'})
+            const token =jwt.sign({email}, 'secret', {expiresIn: '30m'})
             if(success){
                 res.json({'email': ahod.rows[0].email,token,"role": "ahod"})
             }

@@ -3,7 +3,7 @@ import LoginPage from './LoginPage'
 const Staff_login = () => {
   return (
     <div className='relative'>
-          <LoginPage role="staff" loginEndpoint="classStafflogin" signupEndpoint="classStaffsignup" redirectPath="/staff" />
+          <LoginPage role="staff" loginEndpoint="classStafflogin" redirectPath="/staff" />
 
     </div>
   )

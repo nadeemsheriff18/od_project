@@ -4,7 +4,7 @@ const HOD_login = () => {
   return (
 <div className="relative">
      
-<LoginPage role="admin" loginEndpoint="stafflogin" signupEndpoint="staffsignup" redirectPath="/admin" />
+<LoginPage role="admin" loginEndpoint="stafflogin" redirectPath="/admin" />
 
     </div>
   )
