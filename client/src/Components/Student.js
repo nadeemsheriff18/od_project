@@ -127,9 +127,9 @@ const Student = () => {
           <div className="flex flex-col lg:flex-row justify-evenly items-center pt-7 px-6 lg:px-24">
             
             {/* Profile / OD Info Section */}
-            <div className="w-full lg:w-1/3 mb-6 lg:mb-0">
+            {/* <div className="w-full lg:w-1/3 mb-6 lg:mb-0">
               <div className="text-lg font-bold text-purple-800">OD :</div>
-            </div>
+            </div> */}
             
             {/* Student Information */}
             <div className="flex flex-col gap-4 rounded-xl bg-white p-6 shadow-xl font-sans text-sm md:text-lg text-gray-700 w-full lg:w-1/3">
@@ -196,9 +196,10 @@ const Student = () => {
             </div>
     
             {/* OD Info Section */}
-            <div className="w-full p-6 lg:w-1/3 flex flex-col items-center lg:items-start text-lg font-bold text-purple-800">
+            <div className="w-full p-6 mt-4 lg:w-1/3 gap-4 rounded-xl bg-white shadow-xl text-md md:text-lg flex flex-col items-center lg:items-start  font-bold text-purple-800">
               <div>OD : {studentData?.OD }</div>
               <div>Permission : {studentData?.Permission}</div>
+              <div>Leave : {studentData?.Leave}</div>
             </div>
           </div>
     
