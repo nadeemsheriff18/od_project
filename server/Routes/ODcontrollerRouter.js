@@ -172,7 +172,7 @@ router.get('/report', async (req, res) => {
         s.rollno AS "RollNumber",
         s.stud_name AS "Name",
         COALESCE(os."OD", 0) AS "OD",             
-        COALESCE(os."Permission", 0) AS "Permission" 
+        COALESCE(os."Permission", 0) AS "Permission",  -- Added comma
         COALESCE(os."Leave", 0) AS "Leave" 
       FROM public."student" AS s
       LEFT JOIN public."ODsummary" AS os ON s.rollno = os."RegNo"
