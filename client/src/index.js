@@ -18,13 +18,14 @@ import AHODDashboard from './Components/AHODDashboard';
 import ForgotPassword from './Components/ForgotPassword';
 import ProtectedRoute from './Components/ProtectedRoute';
 import AdminControl from './Components/AdminControl';
-
+import Navbar from './Components/Navbar';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 const queryClient = new QueryClient();
 root.render(
   <QueryClientProvider client={queryClient}>
   <BrowserRouter>
-    <Odheader />
+    {/* <Odheader /> */}
+    <Navbar/>
     <Switch>
       <Route exact path="/">
         <Student_Login />

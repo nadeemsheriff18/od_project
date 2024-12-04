@@ -267,6 +267,28 @@ app.post('/classStafflogin',async (req,res)=>{
         console.log(err)
     }
 })
+//dc login
+app.post('/classStafflogin',async (req,res)=>{
+    const {email,password}= req.body
+    try{
+        const staff=await pg.query('SELECT * FROM dc_login Where username = $1', [email])
+
+        if(!staff.rows.length) return res.json({detail: 'User does not exist! '})
+
+            const success =await bcrypt.compare(password,staff.rows[0].password)
+            const token =jwt.sign({email}, 'secret', {expiresIn: '30m'})
+            if(success){
+                res.json({'email': staff.rows[0].username,token,"role":"DC"})
+            }
+            else{
+                res.json({detail: 'Invalid password! '})
+            }
+    }
+    catch(err){
+        console.log(err)
+    }
+})
+
 
 //student login
 app.post('/studentlogin',async (req,res)=>{
@@ -294,6 +316,27 @@ app.post('/studentlogin',async (req,res)=>{
  });
 
  //AHOD login
+app.post('/ahodlogin',async (req,res)=>{
+    const {email,password}= req.body
+    try{
+        const ahod=await pg.query('SELECT * FROM ahod_login Where email = $1', [email])
+
+        if(!ahod.rows.length) return res.json({detail: 'User does not exist! '})
+
+            const success =await bcrypt.compare(password,ahod.rows[0].hashed_pwd)
+            const token =jwt.sign({email}, 'secret', {expiresIn: '30m'})
+            if(success){
+                res.json({'email': ahod.rows[0].email,token,"role": "ahod"})
+            }
+            else{
+                res.json({detail: 'Invalid password! '})
+            }
+    }
+    catch(err){
+        console.log(err)
+    }
+})
+
 app.post('/ahodlogin',async (req,res)=>{
     const {email,password}= req.body
     try{

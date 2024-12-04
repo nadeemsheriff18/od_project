@@ -3,7 +3,7 @@ function Student_Login() {
   return (
     <div className="relative">
       
-      <LoginPage role="student" loginEndpoint="studentlogin" signupEndpoint="studentsignup" redirectPath="/student" />
+      <LoginPage role="student" loginEndpoint="studentlogin"  redirectPath="/student" />
 
     </div>
   );
