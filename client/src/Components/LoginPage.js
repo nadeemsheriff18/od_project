@@ -46,7 +46,7 @@ function LoginPage({ role, loginEndpoint, redirectPath }) {
 
       <form className="w-full max-w-md flex flex-col shadow-lg p-8 rounded-2xl bg-white">
         <h1 className="flex justify-center items-center mb-9 text-2xl text-violet-800 font-bold">
-          Welcome {role}
+          Welcome {role==="admin"? `HOD`:`${role}`}
         </h1>
 
         <div className="mb-4">

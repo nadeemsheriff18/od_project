@@ -19,6 +19,9 @@ import ForgotPassword from './Components/ForgotPassword';
 import ProtectedRoute from './Components/ProtectedRoute';
 import AdminControl from './Components/AdminControl';
 import Navbar from './Components/Navbar';
+import Staff from './Components/Staff';
+import DcLogin  from './Components/DcLogin';
+import Staff_login from './Components/Staff_login';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 const queryClient = new QueryClient();
 root.render(
@@ -41,8 +44,8 @@ root.render(
      */}
        <ProtectedRoute path="/ahod" role="ahod" component={ODController}/> 
        <ProtectedRoute path="/adminControl" role="DC" component={AdminControl}/> 
-       <ProtectedRoute path="/history/:rollno" role="student" component={History}/> 
-      
+       <ProtectedRoute path="/history/:rollno" role="student" component={History}/>  
+       <ProtectedRoute path="/staff" role="staff" component={Staff}/>
       {/* <Route path="/adminControl"><AdminControl/>
       </Route> */}
       <Route path="/report"><ReportPage/>
@@ -54,8 +57,14 @@ root.render(
       <Route path="/stafflogin">
         <HOD_login />
       </Route>
+      <Route path="/classstafflogin">
+        <Staff_login />
+      </Route>
       <Route path="/ahodlogin">
         <AHOD_login />
+      </Route>
+      <Route path="/dclogin">
+        <DcLogin />
       </Route>
       <Route path="/forgotpwd">
         <ForgotPassword />

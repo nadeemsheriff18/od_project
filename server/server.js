@@ -175,6 +175,28 @@ app.use('/api/upload/',AdminControlRouter);
 //         }
 //     }
 // });
+//  app.post('/ahodsignup', async (req,res)=>{
+//     const {email, password}= req.body
+//     const salt=bcrypt.genSaltSync(10)
+//     const hashedPassword=bcrypt.hashSync(password,salt)
+
+//     try{
+//         const signUp = await pg.query(`INSERT INTO ahod_login (email, hashed_pwd) VALUES($1, $2);`,
+//             [email, hashedPassword])
+        
+//             const token =jwt.sign({email}, 'secret', {expiresIn: '1hr'})
+
+//             res.json({email, token,"role": "ahod"})
+        
+//     }
+//     catch(err){
+//         console.log(err)
+
+//         if (err) {
+//             res.json({detail:err.detail})
+//         }
+//     }
+// });
 
 // app.post('/ahodlogin',async (req,res)=>{
 //     const {email,password}= req.body
@@ -268,7 +290,7 @@ app.post('/classStafflogin',async (req,res)=>{
     }
 })
 //dc login
-app.post('/classStafflogin',async (req,res)=>{
+app.post('/dclogin',async (req,res)=>{
     const {email,password}= req.body
     try{
         const staff=await pg.query('SELECT * FROM dc_login Where username = $1', [email])
