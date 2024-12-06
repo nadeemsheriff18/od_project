@@ -6,14 +6,18 @@ import ODController from './Routes/ODcontrollerRouter.js';
 import Student from './Routes/StudentRouter.js';
 import pg from "./DB/DPPG.js";
 import path from 'path';
+import dotenv from 'dotenv';
 import AdminControlRouter from './Routes/AdminControlRouter.js';
 import os from 'os';
 import { fileURLToPath } from 'url'; 
 import { dirname, join } from 'path';
+dotenv.config();
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const app = express();
-const port = process.send.port|| 3001;
+// console.log(process.env.PORT);
+const port = process.env.PORT|| 3001;
 
 
 // Middlewares

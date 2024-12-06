@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from "axios";
-
+import dotenv from 'dotenv';
+dotenv.config();
 function AdminControl() {
     const [studentFile, setStudentFile] = useState(null);
     const [attendanceFile, setAttendanceFile] = useState(null);
@@ -19,7 +20,7 @@ function AdminControl() {
         // Fetch years and their sections from the server when the component mounts
         const fetchYears = async () => {
             try {
-                const response = await axios.get(`/api/upload/fetchingSections`);
+                const response = await axios.get(`/${process.env.API_ROUTE}/upload/fetchingSections`);
                  console.log(response.data.Years);
                  setYears(response.data.Years)
             } catch (error) {
@@ -68,7 +69,7 @@ function AdminControl() {
         const formData = new FormData();
         formData.append("file", fileToUpload);
         try {
-            const response = await axios.post(`/api/upload/upload${atd}`, formData, { headers: { "Content-Type": "multipart/form-data" } });
+            const response = await axios.post(`${process.env.API_ROUTE}/upload/upload${atd}`, formData, { headers: { "Content-Type": "multipart/form-data" } });
             if (isAttendanceUpload) {
                 setAttendanceSuccess("Attendance file uploaded successfully");
                 setAttendanceError(""); 
@@ -91,7 +92,7 @@ function AdminControl() {
     const handleAddSection = async () => {
         try {
             // Send the request to the server to add the section
-            const response = await axios.post(`/api/upload/sections`, { year: selectedYear, section: sectionToAdd },{validateStatus: (status) => {
+            const response = await axios.post(`/${process.env.API_ROUTE}/upload/sections`, { year: selectedYear, section: sectionToAdd },{validateStatus: (status) => {
                 // Accept 2xx and 409 status codes as successful responses
                 return status >= 200 && status < 300 || status === 409;
             }});
@@ -135,7 +136,7 @@ function AdminControl() {
         }
         else{
             try {
-                const response = await axios.delete(`/api/upload/sectionsdel`, { data: { year, section } });
+                const response = await axios.delete(`/${process.env.API_ROUTE}/upload/sectionsdel`, { data: { year, section } });
                 
                 if (response.status === 200) {
                     // Update success message

@@ -1,27 +1,34 @@
 import pkg from 'pg';  // Import the entire 'pg' module as a default import
 const { Pool } = pkg;
 import cron from 'node-cron';
-
+import dotenv from 'dotenv'
+dotenv.config();
 //!!!!!!!!! Unthula work pandra apo . entha comment out paniko !!!!!!!!!!!!!!!!!!!!!!!!
 //KABI
 
-//const pool = new Pool({
-//    user: "postgres",
-//    host: "localhost",
-//    database: "OD",
-//    password: "k1062005",
-//    port: 5432,          
-//    
-//});
-
+const pool = new Pool({
+   user: "postgres",
+   host: "localhost",
+   database: "OD",
+   password: "k1062005",
+   port: 5432,          
+   
+});
+// const pool = new Pool({
+//   user: process.env.POSTGRES_USER_NAME,
+//   password: process.env.POSTGRES_PASSWORD,
+//     host: process.env.POSTGRES_HOST,
+//      port: process.env.POSTGRES_PORT,
+//   database: process.env.POSTGRES_DATABASE,
+// });
 //Nadeem
- const pool = new Pool({
-         user: 'postgres',
-         password: '160427',
-           host: 'localhost',
-            port: 5432,
-         database: 'OD'
-      });
+//  const pool = new Pool({
+//          user: 'postgres',
+//          password: '160427',
+//            host: 'localhost',
+//             port: 5432,
+//          database: 'OD'
+//       });
 
 // Export the pool instance
 // const updateExpiredRecords = async () => {
